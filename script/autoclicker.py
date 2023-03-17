@@ -117,12 +117,13 @@
 #| | \| ___]  |  |  | |___ |___ |  |  |  | |__| | \|
          
 
-import sys, time
+import sys, time,os
 
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QSlider, QHBoxLayout, QLabel, QTextEdit
-from PyQt5.QtCore import Qt, QPoint, QEvent
-from PyQt5.QtGui import QFont, QTransform
+from PyQt5.QtCore import Qt
 from PyQt5 import QtGui
+from PyQt5.QtGui import QIcon
+
 
 from pynput import mouse, keyboard
 
@@ -133,6 +134,23 @@ from pynput import mouse, keyboard
                 
 
 #OPENING | https://www.youtube.com/watch?v=_85LaeTCtV8 :3
+
+
+
+def ressource_path(relative_path):
+    try:
+        base_path=sys._MEIPASS
+                
+    except Exception:
+        base_path = os.path.abspath('.')
+                
+    return os.path.join(base_path ,relative_path)
+                
+# Pour que la création d'un fichier executable s'effectue, il faut inclure tout les chemins relatif dans ressource_path()
+# Exemple : 
+# /icon/lol.png  DEVIENT  ressource_path(/icon/lol.png)
+# idem dés que l'on ouvre un fichier relatif en lecture, ou en écriture.
+
 
 
 #Notre classe importable contenant les fonctions pour ne pas avoir à travailler
@@ -428,25 +446,116 @@ class HardWorkingBruh(QWidget):
         
         self.setWindowTitle('Hard working Bruh')
 
+        self.setWindowIcon(QIcon(ressource_path(r"ico\autoclicker.png")))
 
-        #Les boutons de l'interface visuelle
-        btn_start = QPushButton('Démarrer l\'enregistrement (F7)', self)
-        btn_start.setStyleSheet("""
-QPushButton {
+        #Le style des boutons en CSS, flemme de faire une page a part ca fonctionne mieux comme ca :
+        self.setStyleSheet("""
+QWidget {
     background-color: #B0F2B4;
-    color: rgb(0, 0, 0);
-    border-radius: 10px;
+    color: #023047;
+    font-family: "Comic Sans MS";
+}
+
+
+
+
+
+QPushButton {
+    background-color: #F2E2BA;
+    color: #023047;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 10px;
     padding: 5px 10px;
 }
 
 QPushButton:hover {
-    background-color: #A0E2A4;
+    background-color: #c7baf2;
 }
 
 QPushButton:pressed {
-    background-color: #90D294;
+    background-color: #A0E2A4;
+
+
 }
+
+
+
+
+QSlider::groove:horizontal {
+    border: 1px solid #BAD7F2;
+    height: 6px;
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #BAD7F2, stop: 1 #B0F2B4);
+    margin: 2px 0;
+}
+
+QSlider::handle:horizontal {
+    background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #023047, stop: 1 #00141d);
+    border: 1px solid #BAD7F2;
+    width: 30px;
+    margin: -2px 0;
+    border-radius: 3px;
+}
+
+
+
+
+QTextEdit {
+    background-color: #BAD7F2;
+    color: #023047;
+    border-radius: 10px;
+    font-family: "Ink Free"
+}
+
+
+QScrollBar:vertical {
+    background: #BAD7F2;
+    width: 12px;
+    margin: 0px;
+    border: 0px;
+}
+
+QScrollBar::handle:vertical {
+    background: #023047;
+    min-height: 20px;
+    border-radius: 6px;
+}
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+    background: none;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+    background: none;
+}
+
+QScrollBar:horizontal {
+    background: #BAD7F2;
+    height: 12px;
+    margin: 0px;
+    border: 0px;
+}
+
+QScrollBar::handle:horizontal {
+    background: #BAD7F2;
+    min-width: 20px;
+    border-radius: 6px;
+}
+
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+    background: none;
+}
+
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+    width: 0px;
+    background: none;
+}
+
 """)
+
+
+        #Les boutons de l'interface visuelle
+        btn_start = QPushButton('Démarrer l\'enregistrement (F7)', self)
         btn_start.clicked.connect(self.start_recording)
 
         btn_stop = QPushButton('Arrêter l\'enregistrement (F7)', self)
@@ -474,7 +583,8 @@ QPushButton:pressed {
         lab_max = QLabel('+')
 
         #Affichage du label définissant les actions
-        self.on_air = QTextEdit(self)
+        self.on_air = QTextEdit(self,objectName="TextEdit")
+        self.on_air.setPlainText("\n\nTUTO :\n\nLe zoom (ctrl + molette ou +/-) fonctionne sur toute l'application\n\nIci seront diffusé les boutons préssés et les actions du logiciel\n\nvous pouvez accélérer la cadence de répétitions en ajustant la scrollbar de rapidité du clic\n\nN'étant pas totalement stable vous risquez de rencontrer des erreurs, mais rien de critique il suffit de redémmarer le pc si ca fait vraiment nimp")
         self.on_air.setReadOnly(True)
 
         #Crée un layout horizontal pour le slider et les labels
