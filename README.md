@@ -13,7 +13,23 @@ Autoclicker version BETA | Python version 3.11.1 | 🇫🇷 | For OS running aut
 
 # Autoclicker 
 
-Un autoclicker /keylogger pour répéter l'ensemble des actions sur votre pc
+Un autoclicker /keylogger pour répéter l'ensemble des actions sur votre pc, enregistrant aussi bien les clics que les mots et les combos (ctrl + ...)
+
+Pour + d'ergonomie vous pouvez zoomer toute l'appli pour l'agrandir, les boutons parlent d'eux meme mais j'ai quand meme écris un tutoriel.
+
+Vous pouvez le lancer avec F7 et couper l'enregistrement avec F8 comme inscrit dans les boutons
+
+# ATTENTION PLIZE
+
+Cette version n'est pas 100% stable, en cas de gros crash votre pc pourrait faire des trucs bizzare, si c'est le cas il suffit de cleaner le cache, le mieux c'est concretement de le rééteindre, bref vous etes prévenus je ne prends aucune responsabilité quand à une mauvaise utilisation
+
+D'ailleurs il est fort probable que le logiciels soit détecté comme un virus puisqu'il peut facilement etre détourné comme keylogger (un truc pour enregistrer tout ce que vous faites genre quand vous écrivez vos mdp, ....) mais bref ce n'est pas mon intention, je l'avais construit dans le but d'un autre logiciel et pour moi, du coups je le partage, si vous avez quand meme des doutes vous avez le script juste au dessus, commenté comme il faut, il suffit de lire et vous verrez assez vite que je ne m'envois rien en privé x) 
+
+Vous pouvez également le compiler par vous meme en installant python et pyinstaller via la méthode décrite ci dessous
+
+Version beta :
+![hardworking beta](https://user-images.githubusercontent.com/92639080/225994931-03225daa-c7aa-421d-bb2d-535d053a5b1d.png)
+
 
 ```
 ___ _  _ ___ ____ ____ _ ____ _    
@@ -80,8 +96,16 @@ N'oubliez pas de l'ajouter à votre chemin d'accès avec l'installeur ou dans l'
 ```
 python -m pip install pyinstaller
 ```
+* Vous pouvez maintenant soit l'installé avec un fichier.spec en tapant dans le répertoire de votre projet :
+```
+pyinstaller VOTRE_FICHIER.spec
 
-* Une fois l'installation terminée, tapez la commande suivante dans votre fenêtre cmd, en remplaçant les chemins d'accès aux fichiers par les vôtres :
+```
+En général je fourni un fichier .spec vide dans le dossier nommé "script", si il n'y est pas il y en a un ici dans un de mes autres logiciel tout les cas :
+
+https://github.com/SECRET-GUEST/trieur/blob/main/Script/AKOUN_trieur_v1.0.0.spec
+
+* tapez la commande suivante dans votre fenêtre cmd, en remplaçant les chemins d'accès aux fichiers par les vôtres :
 
 ```
 pyinstaller --onefile --icon="...YOUR PATH.../YOUR ICON.ico" --add-data "...YOUR PATH.../ico;ico" --noconsole test.py
