@@ -1,4 +1,4 @@
-Autoclicker version BETA | Python version 3.11.1 | 🇫🇷 | For OS running autoclickers so better on Windows 
+[![Download autoclicker](https://img.shields.io/sourceforge/dt/hardworkingbruh.svg)](https://sourceforge.net/projects/hardworkingbruh/files/latest/download) Autoclicker version BETA | Python version 3.11.1 | 🇫🇷 | For OS running autoclickers so better on Windows 
 ```
 ██╗  ██╗ █████╗ ██████╗ ██████╗ ██╗    ██╗ ██████╗ ██████╗ ██╗  ██╗██╗███╗   ██╗ ██████╗     ██████╗ ██████╗ ██╗   ██╗██╗  ██╗
 ██║  ██║██╔══██╗██╔══██╗██╔══██╗██║    ██║██╔═══██╗██╔══██╗██║ ██╔╝██║████╗  ██║██╔════╝     ██╔══██╗██╔══██╗██║   ██║██║  ██║
@@ -18,6 +18,8 @@ Un autoclicker /keylogger pour répéter l'ensemble des actions sur votre pc, en
 Pour + d'ergonomie vous pouvez zoomer toute l'appli pour l'agrandir, les boutons parlent d'eux meme mais j'ai quand meme écris un tutoriel.
 
 Vous pouvez le lancer avec F7 et couper l'enregistrement avec F8 comme inscrit dans les boutons
+
+[![Download autoclicker](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/hardworkingbruh/files/latest/download)
 
 # ATTENTION PLIZE
 
