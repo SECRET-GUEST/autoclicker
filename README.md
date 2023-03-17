@@ -11,7 +11,7 @@ Autoclicker version BETA | Python version 3.11.1 | 🇫🇷 | For OS running aut
 ```
 
 
-# Autoclicker 
+# Votre BRUH l'esclave de service 
 
 Un autoclicker /keylogger pour répéter l'ensemble des actions sur votre pc, enregistrant aussi bien les clics que les mots et les combos (ctrl + ...)
 
