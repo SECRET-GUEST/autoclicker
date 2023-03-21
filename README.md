@@ -33,6 +33,15 @@ Version beta :
 ![hardworking beta](https://user-images.githubusercontent.com/92639080/225994931-03225daa-c7aa-421d-bb2d-535d053a5b1d.png)
 
 
+
+# :scroll: License
+
+Ce repo est sous une license [MIT License](LICENSE). Regardez le fichier `LICENSE` pour plus d'infos.
+
+# :question: Support & Questions
+
+Si vous avez des questions posez les sur twitter.
+
 ```
 ___ _  _ ___ ____ ____ _ ____ _    
  |  |  |  |  |  | |__/ | |__| |    
