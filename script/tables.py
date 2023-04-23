@@ -117,18 +117,17 @@
 #| |\ | [__   |  |__| |    |    |__|  |  | |  | |\ |
 #| | \| ___]  |  |  | |___ |___ |  |  |  | |__| | \|
     
-import sys, time,threading
+import sys, time,threading,uuid
 
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout,QHBoxLayout, QTableWidget, 
 QPushButton,QCheckBox,  QWidget, QComboBox, QLabel, QLineEdit, QSpinBox, QDoubleSpinBox, QFileDialog)
-
 from PyQt5.QtCore import Qt
 
 from pynput import mouse
 from pynput.mouse import  Controller as MouseController, Button
+from pynput.mouse import Listener as MouseListener
 from pynput.keyboard import Key, Controller as KeyboardController
 from pynput.keyboard import Listener
-
 
 
 #___  ____ _ _ _ ____ ____    ___  _    ____ _  _ ___
@@ -141,8 +140,17 @@ from pynput.keyboard import Listener
 
 
 class DarthBMO(QMainWindow):
+
     def __init__(self):
         super().__init__()
+
+        # Initialize some variables needed to record the scroll method
+        self.recording_scroll = False
+        self.scroll_amount = 0
+        self.mouse_controller = MouseController()
+
+        #Set uniques ID for any row to avoid errors
+        self.row_ids = set()
 
         self.GUI()
 
@@ -168,35 +176,7 @@ class DarthBMO(QMainWindow):
                              
 
 
-    def add_widgets(self, row, widget_list):
-        # This method adds widgets to a row of the table
-        # The widget_list argument is a list of widgets, one for each column in the row
-        for col, widget in enumerate(widget_list):
-            if widget is None:
-                # If the widget is None, add an empty QLabel instead
-                self.table.setCellWidget(row, col + 1, QLabel(""))
-            else:
-                # Otherwise, add the widget to the cell in the table
-                self.table.setCellWidget(row, col + 1, widget)
-
-
-
-    def update_row_widgets(self, row):
-        # Get the current action type from the dropdown menu in the first column
-        action_type = self.table.cellWidget(row, 0).currentText()
-        # Define a dictionary that maps each action type to a list of widgets to add to the row
-        widgets = {
-            "Clic": self.click_widgets(row),
-            "Double clic": self.click_widgets(row),
-            "Press": self.key_press_widgets(row),
-            "Combo": self.combo_widgets(row),
-            "Text": self.text_widgets(row),
-            "Keywords": self.keywords_widgets(row)
-        }
-        # Add the widgets for the selected action type to the row
-        self.add_widgets(row, widgets[action_type])
-
-
+# Function record click mouse (double click in program launch)
     def click_widgets(self, row):
         # Create widgets for a "Clic" or "Double clic" action
         x_line_edit = QLineEdit()
@@ -204,9 +184,35 @@ class DarthBMO(QMainWindow):
         position_button = QPushButton("Position")
         position_button.clicked.connect(lambda: self.record_mouse_position(x_line_edit, y_line_edit))
         delay_spinbox = self.create_delay_spinbox()
+
+        # Return the widgets as a list
         return [x_line_edit, y_line_edit, position_button, delay_spinbox]
 
 
+
+
+
+
+
+#Function to move the mouse without clicking
+    def move_widgets(self, row):
+        # Create line edits for x and y coordinates, a button to record the position, and a delay spinbox
+        x_line_edit = QLineEdit()
+        y_line_edit = QLineEdit()
+        position_button = QPushButton("Position")
+
+        position_button.clicked.connect(lambda: self.record_mouse_position(x_line_edit, y_line_edit))
+        delay_spinbox = self.create_delay_spinbox()
+
+        return [x_line_edit, y_line_edit, position_button, delay_spinbox]
+    
+
+
+
+
+
+
+#Function to play a pressed key
     def key_press_widgets(self, row):
         # Create widgets for a "Press" action
         key_dropdown = QComboBox()
@@ -219,6 +225,78 @@ class DarthBMO(QMainWindow):
         return [key_dropdown, spinbox, label, delay_spinbox]
 
 
+
+
+
+
+
+# Functions to record the scroll position
+    def scroll_widgets(self, row):
+        # Create spinboxes for positive and negative scroll amounts, a button to record the amount, and a delay spinbox
+        scroll_spinbox_positive = QSpinBox()
+        scroll_spinbox_positive.setRange(1, 100)
+        scroll_spinbox_negative = QSpinBox()
+        scroll_spinbox_negative.setRange(-100, -1)
+        record_button = QPushButton("Record")
+        record_button.setCheckable(True)
+        record_button.clicked.connect(lambda: self.record_scroll_amount(record_button, scroll_spinbox_positive, scroll_spinbox_negative))
+        delay_spinbox = self.create_delay_spinbox()
+
+        return [scroll_spinbox_positive, scroll_spinbox_negative, record_button, delay_spinbox]
+    
+
+    def on_scroll(self, x, y, dx, dy):
+        # Listen the scroll
+        if self.recording_scroll:
+            self.scroll_amount += dy
+
+
+    def record_scroll_amount(self, record_button, scroll_spinbox_positive, scroll_spinbox_negative):
+        # If the record button is checked, start recording mouse scroll events
+        if record_button.isChecked():
+            record_button.setText("Stop")
+            self.recording_scroll = True
+            self.scroll_amount = 0
+            self.listener = MouseListener(on_scroll=self.on_scroll)
+            self.listener.start()
+
+        # If the record button is unchecked, stop recording and update the spinboxes with the recorded scroll amount
+        else:
+            record_button.setText("Record")
+            self.recording_scroll = False
+            if self.scroll_amount != 0:
+                if self.scroll_amount > 0:
+                    scroll_spinbox_positive.setValue(self.scroll_amount)
+                    scroll_spinbox_negative.setValue(0)
+                else:
+                    scroll_spinbox_positive.setValue(0)
+                    scroll_spinbox_negative.setValue(self.scroll_amount)
+            # Stop the listener and reset the recorded scroll amount
+            self.listener.stop()
+            self.scroll_amount = 0
+ 
+ 
+    def update_scroll_spinboxes(self, scroll_spinbox_positive, scroll_spinbox_negative):
+        # Update the spinboxes with the recorded scroll amount
+        if self.scroll_amount > 0:
+            # If the scroll amount is positive, set the positive spinbox to the scroll amount and the negative spinbox to 0
+            scroll_spinbox_positive.setValue(self.scroll_amount)
+            scroll_spinbox_negative.setValue(0)
+            # Start the listener to capture additional scroll events
+            self.listener.start()
+        else:
+            # If the scroll amount is negative, set the negative spinbox to the scroll amount and the positive spinbox to 0
+            scroll_spinbox_positive.setValue(0)
+            scroll_spinbox_negative.setValue(self.scroll_amount)
+            # Update the spinboxes recursively until the scroll amount is zero
+            self.update_scroll_spinboxes(scroll_spinbox_positive, scroll_spinbox_negative)
+
+
+
+
+
+
+# Function to enter text
     def text_widgets(self, row):
         # Create a line edit widget for the text to be typed
         line_edit = QLineEdit()
@@ -228,6 +306,12 @@ class DarthBMO(QMainWindow):
         return [None,line_edit, None, delay_spinbox]
 
 
+
+
+
+
+
+# Function to enter keywords
     def keywords_widgets(self, row):
         # Create a line edit widget for the keywords to be typed
         line_edit = QLineEdit()
@@ -240,6 +324,10 @@ class DarthBMO(QMainWindow):
         return [separator_dropdown, line_edit, None, delay_spinbox]
     
 
+
+
+
+# Function to add keys combo
     def combo_widgets(self, row):
         # Create a dropdown widget to choose the combo action
         combo_dropdown = QComboBox()
@@ -322,58 +410,7 @@ class DarthBMO(QMainWindow):
     
     
 
-    def add_row(self):
-        # Add a new row to the script table
-        row = self.table.rowCount()
-        self.table.setRowCount(row + 1)
-    
-        # Create a dropdown widget to select the action type for the new row and add it to the table
-        action_type_dropdown = QComboBox()
-        action_type_dropdown.addItems(["Clic", "Double clic", "Press", "Combo", "Text", "Keywords"])
-        action_type_dropdown.currentIndexChanged.connect(lambda: self.update_row_widgets(row))
-        self.table.setCellWidget(row, 0, action_type_dropdown)
-    
-        # Create a button widget to delete the new row and add it to the table
-        delete_button = QPushButton("-")
-        delete_button.clicked.connect(lambda _, row=row: self.delete_row(row))
-        self.table.setCellWidget(row, 5, delete_button)
-    
-        # Create a button widget to insert a new row below the new row and add it to the table
-        add_button = QPushButton("+")
-        add_button.clicked.connect(lambda _, row=row: self.insert_row(row))
-        self.table.setCellWidget(row, 6, add_button)
-    
-        # Update the widget options for the new row based on the selected action type
-        self.update_row_widgets(row) 
-    
 
-    def insert_row(self, row):
-        # Insert a new row into the script table at the specified position
-        self.table.insertRow(row + 1)
-    
-        # Create a dropdown widget to select the action type for the new row and add it to the table
-        action_type_dropdown = QComboBox()
-        action_type_dropdown.addItems(["Clic", "Double clic", "Press", "Combo", "Text", "Keywords"])
-        action_type_dropdown.currentIndexChanged.connect(lambda: self.update_row_widgets(row + 1))
-        self.table.setCellWidget(row + 1, 0, action_type_dropdown)
-    
-        # Create a button widget to delete the new row and add it to the table
-        delete_button = QPushButton("-")
-        delete_button.clicked.connect(lambda _, row=row: self.delete_row(row + 1))
-        self.table.setCellWidget(row + 1, 5, delete_button)
-    
-        # Create a button widget to insert a new row below the new row and add it to the table
-        add_button = QPushButton("+")
-        add_button.clicked.connect(lambda _, row=row: self.insert_row(row + 1))
-        self.table.setCellWidget(row + 1, 6, add_button)
-    
-        # Update the widget options for the new row based on the selected action type
-        self.update_row_widgets(row + 1) 
-        
-    
-    def delete_row(self, row):
-        # Remove the specified row from the script table
-        self.table.removeRow(row)
     
     
     def on_click(self, x, y, button, pressed):
@@ -415,10 +452,95 @@ class DarthBMO(QMainWindow):
         # Update the delay value for each row in the script table based on the specified factor
         for i in range(self.table.rowCount()):
             delay_spinbox = self.table.cellWidget(i, 4)
+
             if delay_spinbox is not None:
                 delay = delay_spinbox.value() * factor
                 delay_spinbox.setValue(delay)
     
+
+
+
+#____ ____ _ _ _    ____ ____ ___ _ ____ _  _ ____ 
+#|__/ |  | | | |    |__| |     |  | |  | |\ | [__  
+#|  \ |__| |_|_|    |  | |___  |  | |__| | \| ___] 
+                                                
+
+
+
+    def update_row_widgets(self, row):
+        # Get the current action type from the dropdown menu in the first columndef update_row_widgets(self, row):
+        action_type = self.table.cellWidget(row, 0).currentText()
+        # Define a dictionary that maps each action type to a list of widgets to add to the row
+        widgets = {
+            "Clic": self.click_widgets(row),
+            "Double clic": self.click_widgets(row),
+            "Move": self.move_widgets(row),
+            "Press": self.key_press_widgets(row),
+            "Combo": self.combo_widgets(row),
+            "Scroll": self.scroll_widgets(row),
+            "Text": self.text_widgets(row),
+            "Keywords": self.keywords_widgets(row)
+        }
+        # Add the widgets for the selected action type to the row
+        self.add_widgets(row, widgets[action_type])
+
+
+
+    def add_widgets(self, row, widget_list):
+        # This method adds widgets to a row of the table
+        # The widget_list argument is a list of widgets, one for each column in the row
+        for col, widget in enumerate(widget_list):
+            if widget is None:
+                # If the widget is None, add an empty QLabel instead
+                self.table.setCellWidget(row, col + 1, QLabel(""))
+
+            else:
+                # Otherwise, add the widget to the cell in the table
+                self.table.setCellWidget(row, col + 1, widget)
+
+
+    def add_row(self):
+        # Generate a new unique row ID
+        row_id = uuid.uuid4()
+        self.row_ids.add(row_id)
+
+        # Add a new row to the script table
+        row = self.table.rowCount()
+        self.table.setRowCount(row + 1)
+
+        # Create a dropdown widget to select the action type for the new row and add it to the table
+        action_type_dropdown = QComboBox()
+        action_type_dropdown.addItems(["Clic", "Double clic","Move", "Press", "Combo", "Scroll", "Text", "Keywords"])
+        action_type_dropdown.currentIndexChanged.connect(lambda: self.update_row_widgets(row))
+        self.table.setCellWidget(row, 0, action_type_dropdown)
+
+        # Create a button widget to delete the new row and add it to the table
+        delete_button = QPushButton("-")
+        delete_button.row_id = row_id
+        delete_button.clicked.connect(lambda: self.delete_row(row_id))
+        self.table.setCellWidget(row, 5, delete_button)
+
+        # Create a button widget to insert a new row below the new row and add it to the table
+        add_button = QPushButton("+")
+        add_button.clicked.connect(lambda: self.add_row())
+        self.table.setCellWidget(row, 6, add_button)
+
+        # Update the widget options for the new row based on the selected action type
+        self.update_row_widgets(row)
+
+
+
+    def delete_row(self, row_id):
+        # Find the row with the given ID
+        for row in range(self.table.rowCount()):
+            if self.table.cellWidget(row, 5).row_id == row_id:
+                break   
+
+        # Remove the row from the script table
+        self.table.removeRow(row)   
+
+        # Remove the row ID from the set of row IDs
+        self.row_ids.remove(row_id) 
 
 
 #____ ____ _  _ ____    ____ ____    _    ____ ____ ___  
@@ -497,6 +619,7 @@ class DarthBMO(QMainWindow):
 
                         if cell_widget is None:
                             continue
+
                         if isinstance(cell_widget, QLineEdit):
                             cell_widget.setText(value)
                         elif isinstance(cell_widget, QComboBox):
@@ -545,13 +668,17 @@ class DarthBMO(QMainWindow):
                             y = int(self.table.cellWidget(row, 2).text())
                             mouse_controller.position = (x, y)
     
-                        # Perform the action
+                        #Left click one time in a range of time according to the delay
                         if action_type == "Clic":
                             mouse_controller.click(Button.left, 1)
                             time.sleep(delay)
+
+                        #Left click twice
                         elif action_type == "Double clic":
                             mouse_controller.click(Button.left, 2)
                             time.sleep(delay)
+
+
                         elif action_type == "Press":
                             # Determine the key to press and the number of times to press it
                             key_name = self.table.cellWidget(row, 1).currentText()
@@ -562,8 +689,23 @@ class DarthBMO(QMainWindow):
                             for _ in range(count):
                                 keyboard_controller.press(key)
                                 keyboard_controller.release(key)
+
                                 time.sleep(delay)
-    
+
+
+                
+                        elif action_type == "Move":
+                            # Get the x and y coordinates from the table
+                            x = int(self.table.cellWidget(row, 1).text())
+                            y = int(self.table.cellWidget(row, 2).text())
+
+                            # Move the mouse to the specified coordinates
+                            self.mouse_controller.position = (x, y)
+
+                            time.sleep(delay)
+
+
+
                         elif action_type == "Combo":
                             # Determine the keys to press for the combo action
                             combo_text = self.table.cellWidget(row, 1).currentText()
@@ -583,32 +725,71 @@ class DarthBMO(QMainWindow):
                             for key in reversed(keys_to_press):
                                 keyboard_controller.release(key)
                             time.sleep(delay)
-    
+
+
+
+                        elif action_type == "Scroll":
+                            # Get the values for positive and negative scroll amounts from the table
+                            scroll_amount_positive = self.table.cellWidget(row, 1).value()
+                            scroll_amount_negative = self.table.cellWidget(row, 2).value()
+
+                            # Calculate the total scroll amount
+                            scroll_amount = scroll_amount_positive + scroll_amount_negative 
+
+                            # If the scroll amount is positive, scroll up for that many steps
+                            if scroll_amount > 0:
+                                for _ in range(scroll_amount):
+                                    self.mouse_controller.scroll(0, 1)
+
+                            # If the scroll amount is negative, scroll down for that many steps
+                            else:
+                                for _ in range(abs(scroll_amount)):
+                                    self.mouse_controller.scroll(0, -1) 
+
+                            time.sleep(delay)
+
+                        
+
                         elif action_type == "Text":
                             # Type the specified text
                             text = self.table.cellWidget(row, 2).text()
                             keyboard_controller.type(text)
                             time.sleep(delay)
     
+
+
                         elif action_type == "Keywords":
-                            # Type the specified keywords separated by the specified separator
+                            # Get the text of the keywords to type and the selected separator from the table
                             keywords_text = self.table.cellWidget(row, 2).text()
                             separator_widget = self.table.cellWidget(row, 1)
                             separator = separator_widget.currentText() if isinstance(separator_widget, QComboBox) else ","
+                            # If the separator is "Enter", use the newline character instead
                             if separator == "Enter":
                                 separator = "\n"
-                            keywords =                        keywords_text.split(',')
+                            
+                            # Split the keywords text using the separator and type each keyword
+                            keywords = keywords_text.split(separator)
+
                             for i, keyword in enumerate(keywords):
-                                keyword = keyword.strip()
+                                keyword = keyword.strip() # Remove any leading or trailing whitespace
+
                                 if keyword:
-                                    keyboard_controller.type(keyword)
+                                    keyboard_controller.type(keyword) # Type the keyword
+                                    # Type the separator if there are more keywords to type
                                     if i < len(keywords) - 1:
                                         if separator != "\n":
-                                            keyboard_controller.type(separator)
+                                            keyboard_controller.type(separator) # Type the separator character
+
                                         else:
+                                            # If the separator is the newline character, press the enter key instead
                                             keyboard_controller.press(Key.enter)
                                             keyboard_controller.release(Key.enter)
-                                    time.sleep(delay)
+
+                                # Add a delay to give time for the typing action to be completed
+                                time.sleep(delay)
+                        
+
+
     
                 # Catch any exceptions that occur during script execution and print an error message
                 except Exception as e:
@@ -641,18 +822,18 @@ class DarthBMO(QMainWindow):
 
         #The button of the app
 
-        save_script_button = QPushButton("SAVE")
-        save_script_button.clicked.connect(self.save_script)
+        btn_save_script = QPushButton("SAVE")
+        btn_save_script.clicked.connect(self.save_script)
 
-        load_script_button = QPushButton("RELOAD")
-        load_script_button.clicked.connect(self.load_script)
+        btn_load_script = QPushButton("RELOAD")
+        btn_load_script.clicked.connect(self.load_script)
 
         self.table = QTableWidget()
         self.table.setColumnCount(7)
         self.table.setHorizontalHeaderLabels(["Type", "Action", "Text", "Position", "Delay", "Delete", "Add"])
 
-        add_row_button = QPushButton("+")
-        add_row_button.clicked.connect(self.add_row)
+        btn_add_row = QPushButton("+")
+        btn_add_row.clicked.connect(self.add_row)
 
 
         self.time_machine_checkbox = QCheckBox("Time machine :")
@@ -671,8 +852,8 @@ class DarthBMO(QMainWindow):
         self.time_machine_spinbox.valueChanged.connect(lambda value: self.toggle_time_machine(Qt.Checked if self.time_machine_checkbox.isChecked() else Qt.Unchecked))
 
 
-        clear_table_button = QPushButton("Sacrifice all")
-        clear_table_button.clicked.connect(self.clear_table)
+        btn_sacrifice = QPushButton("Sacrifice all")
+        btn_sacrifice.clicked.connect(self.clear_table)
 
         self.loop_checkbox = QCheckBox("Reach Infinity")
 
@@ -701,24 +882,26 @@ class DarthBMO(QMainWindow):
         main_widget.setLayout(Vlay_BMO)
 
         Vlay_BMO.addLayout(Hlay_BMO)
-        Hlay_BMO.addWidget(save_script_button)
-        Hlay_BMO.addWidget(load_script_button)
+        Hlay_BMO.addWidget(btn_save_script)
+        Hlay_BMO.addWidget(btn_load_script)
         Vlay_BMO.addWidget(self.table)
-        Vlay_BMO.addWidget(add_row_button)
+        Vlay_BMO.addWidget(btn_add_row)
+        Vlay_BMO.addSpacing(10)
         Vlay_BMO.addLayout(Hlay_BMO_time_machine)
-
         Hlay_BMO_time_machine.addWidget(self.time_machine_checkbox)
         Hlay_BMO_time_machine.addWidget(self.time_machine_spinbox)
+        Vlay_BMO.addSpacing(10)
+        Vlay_BMO.addWidget(btn_sacrifice)
+        Vlay_BMO.addSpacing(10)
 
-        Vlay_BMO.addWidget(clear_table_button)
         Vlay_BMO.addLayout(Hlay_BMO_loop)
-
         Hlay_BMO_loop.addWidget(self.loop_checkbox)
         Hlay_BMO_loop.addWidget(loop_label)
         Hlay_BMO_loop.addWidget(self.loop_spinbox)
         Hlay_BMO_loop.addWidget(loop_label_end)
 
         Vlay_BMO.addWidget(press_exit)
+        Vlay_BMO.addSpacing(20)
         Vlay_BMO.addWidget(launch_script_button)
 
 
