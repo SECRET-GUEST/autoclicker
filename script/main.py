@@ -118,7 +118,7 @@ from PyQt5.QtCore import Qt
 
 from recorder import HardWorkingBruh, Recorder
 from tables import DarthBMO
-
+from overlay import layer0 as Overlay
 
 
 #___  ____ _ _ _ ____ ____    ___  _    ____ _  _ ___
@@ -223,6 +223,15 @@ class MainWindow(QMainWindow):
             self.tabs.removeTab(self.tabs.indexOf(self.click_recorder_tab))
 
 
+    def toggle_overlay_tab(self, checked):
+        # Add or remove the Click Recorder tab based on the checkbox state
+        if checked:
+            index = self.tabs.addTab(self.overlay_tab, "Overlay")
+            self.tabs.setCurrentIndex(index)
+        else:
+            self.tabs.removeTab(self.tabs.indexOf(self.overlay_tab))
+    
+
     def about_dialog(self):
         # Open a dialog box showing information about the program
         dialog = QDialog(self)
@@ -272,7 +281,7 @@ class MainWindow(QMainWindow):
 
         self.autoclicker_check = QAction("Autoclicker", self, checkable=True)
         self.click_recorder_check = QAction("Click Recorder", self, checkable=True)
-
+        self.overlay_check = QAction("Overlay", self, checkable=True)
 
 #TODO:
 #        #Menu Display
@@ -298,6 +307,7 @@ class MainWindow(QMainWindow):
         self.tabs = QTabWidget()
 
         #Add and configure tabs
+        self.overlay_tab = Overlay()
         self.autoclicker_tab = DarthBMO()
         self.click_recorder_tab = Recorder()
         self.click_recorder_tab.set_main_window(self)
@@ -305,20 +315,25 @@ class MainWindow(QMainWindow):
 
         self.tabs.addTab(self.autoclicker_tab, "Autoclicker")
         self.tabs.addTab(self.click_recorder_tab, "Recorder")
+        self.tabs.addTab(self.overlay_tab, "Overlay")
 
         #Connect signals
         self.autoclicker_check.toggled.connect(self.toggle_autoclicker_tab)
         self.click_recorder_check.toggled.connect(self.toggle_click_recorder_tab)
+        self.overlay_check.toggled.connect(self.toggle_overlay_tab)
 
         #Set initial check states
         self.autoclicker_check.setChecked(True)
         self.click_recorder_check.setChecked(True)
-        self.click_recorder_check.setChecked(False)
-
+        self.click_recorder_check.setChecked(False) # powered by scotch tape, thank you Phil👌
+        self.overlay_check.setChecked(True)
+        self.overlay_check.setChecked(False)
 
         #Add menu actions
         windows_menu.addAction(self.autoclicker_check)
         windows_menu.addAction(self.click_recorder_check)
+        windows_menu.addAction(self.overlay_check)
+
 #        display_menu.addAction(self.themes_action)
         help_menu.addAction(about_action)
         help_menu.addAction(help_action)
