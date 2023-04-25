@@ -20,7 +20,7 @@ You can already run a stable version directly from the scripts.
 ## news :
 - Tables to set the autoclicker manually
 - Upload commands for table in a text file that you can manually rewrite easyly with a text editor for example
-- Overlay that you can also find alone here : https://github.com/SECRET-GUEST/Layer-one
+- Overlay that you can also find alone in here : https://github.com/SECRET-GUEST/Layer-one
 
 
 I fixed common issues,  the recorder is now stable on my equipements, but the new table system is way more powerful than it, you can save and load the script you used, they are adding each one to each others then read the command one by one.
