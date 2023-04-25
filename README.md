@@ -25,7 +25,7 @@ You can already run a stable version directly from the scripts.
 
 I fixed common issues,  the recorder is now stable on my equipements, but the new table system is way more powerful than it, you can save and load the script you used, they are adding each one to each others then read the command one by one.
 
-I would like to put random delay time that could be set, also make a handler for issues, and add possibility to customize easily themes and more ideas, I will relase the whole app soon so stay tuned even if I know nobody will read that ^^
+I would like to put random delay time that could be set, also make a handler for issues, and add possibility to customize easily themes and more ideas, I will relase the whole app soon so stay tuned even if I know nobody will read this ^^
 
 
 ## :scroll: License
