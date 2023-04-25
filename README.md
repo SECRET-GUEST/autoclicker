@@ -1,4 +1,4 @@
-[![Download autoclicker](https://img.shields.io/sourceforge/dt/hardworkingbruh.svg)](https://sourceforge.net/projects/hardworkingbruh/files/latest/download) Autoclicker version BETA | Python version 3.11.1 | 🇫🇷 | For OS running autoclickers so better on Windows 
+[![Download autoclicker](https://img.shields.io/sourceforge/dt/hardworkingbruh.svg)](https://sourceforge.net/projects/hardworkingbruh/files/latest/download) Autoclicker version BETA | Python version 3.11.2 | For OS running autoclickers so better on Windows 
 ```
 ██╗  ██╗ █████╗ ██████╗ ██████╗ ██╗    ██╗ ██████╗ ██████╗ ██╗  ██╗██╗███╗   ██╗ ██████╗     ██████╗ ██████╗ ██╗   ██╗██╗  ██╗
 ██║  ██║██╔══██╗██╔══██╗██╔══██╗██║    ██║██╔═══██╗██╔══██╗██║ ██╔╝██║████╗  ██║██╔════╝     ██╔══██╗██╔══██╗██║   ██║██║  ██║
@@ -11,36 +11,19 @@
 ```
 
 
-# Votre BRUH l'esclave de service 
+#  New version coming soon
 
-Un autoclicker /keylogger pour répéter l'ensemble des actions sur votre pc, enregistrant aussi bien les clics que les mots et les combos (ctrl + ...)
-
-Pour + d'ergonomie vous pouvez zoomer toute l'appli pour l'agrandir, les boutons parlent d'eux meme mais j'ai quand meme écris un tutoriel.
-
-Vous pouvez le lancer avec F7 et couper l'enregistrement avec F8 comme inscrit dans les boutons
-
-[![Download autoclicker](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/hardworkingbruh/files/latest/download)
-
-# ATTENTION PLIZE
-
-Cette version n'est pas 100% stable, en cas de gros crash votre pc pourrait faire des trucs bizzare, si c'est le cas il suffit de cleaner le cache, le mieux c'est concretement de le rééteindre, bref vous etes prévenus je ne prends aucune responsabilité quand à une mauvaise utilisation
-
-D'ailleurs il est fort probable que le logiciels soit détecté comme un virus puisqu'il peut facilement etre détourné comme keylogger (un truc pour enregistrer tout ce que vous faites genre quand vous écrivez vos mdp, ....) mais bref ce n'est pas mon intention, je l'avais construit dans le but d'un autre logiciel et pour moi, du coups je le partage, si vous avez quand meme des doutes vous avez le script juste au dessus, commenté comme il faut, il suffit de lire et vous verrez assez vite que je ne m'envois rien en privé x) 
-
-Vous pouvez également le compiler par vous meme en installant python et pyinstaller via la méthode décrite ci dessous
-
-Version beta :
-![hardworking beta](https://user-images.githubusercontent.com/92639080/225994931-03225daa-c7aa-421d-bb2d-535d053a5b1d.png)
-
+You can already run a stable version directly from the scripts.
 
 
 # :scroll: License
 
-Ce repo est sous une license [MIT License](LICENSE). Regardez le fichier `LICENSE` pour plus d'infos.
+This repository is released under the [MIT License](LICENSE). Please see the `LICENSE` file for more information.
 
 # :question: Support & Questions
 
-Si vous avez des questions posez les sur twitter.
+If you have any questions or need support, please feel free to open an issue or join my twitter.
+
 
 ```
 ___ _  _ ___ ____ ____ _ ____ _    
@@ -49,117 +32,109 @@ ___ _  _ ___ ____ ____ _ ____ _
                                    
 ```
 
-Voici un tutoriel expliquant les différentes façons d'exécuter les fichiers :
+Here a tutorial explaning different ways to run the files :
 
 
-# Pour les utilisateurs de **MAC** & **Linux** :
+# For **MAC** & **Linux** users :
 
-Comme ce script est conçu pour les utilisateurs de Windows, vous devriez probablement commencer par améliorer le code.
+Since this script is designed for Windows users, you should probably first improve the code.
 
-Voici cependant la procédure à suivre pour exécuter le script :
+However here is the procedure to run the script:
 
 * [ MAC ] ; https://macosx-faq.com/how-to-run-python-script/
-* [ LINUX ] ; ouvrir un terminal puis `cd` jusqu'au script et taper :
+* [ LINUX ] ; open a terminal then cd until the script and type
 
 ```
 python script.pyw
 ```
-(où `script.pyw` est évidemment le nom de ce que vous avez téléchargé)
+(where `script.pyw` is obviously the name of what you've downloaded)
 
 
-# Pour les utilisateurs microsoft;
+# For microsoft users;
 
-Comme ce script est créé par pyinstaller, il pourrait être détecté comme un logiciel malveillant puisque non signé, mais il n'en est rien, de toute manières vous avez le code.
+Because this script is made by pyinstaller it could be detected as a malware.
 
-Voici les possibilités d'exécuter le script ; 
+Here are possibilities to run the script; 
 
-## 1. En cliquant simplement sur l( APPLICATION.exe
+## 1. Run by simple click on APPLICATION.exe
 
-Le fichier `.exe` est une version portable faite pour les utilisateurs de Microsoft avec pyinstaller, vous ne pouvez télécharger que ce fichier et rien d'autre.
+The .exe file can be found in the folder or it's in portable version made for microsoft users with pyinstaller in latest updates.
 
-## 2. Lancer avec Python
+## 2. Run with Python
 
-`Script` est un répertoire contenant le script original pour python 3.11. 
+`Python script` is directory with the original script for python 3.11. 
 
-Si vous avez une version inférieure, vous devrez peut-être télécharger des modules importés qui ne sont pas inclus dans votre version. 
+In case you have a lower version you may have to download module imported not included with your version. 
+Just read the first lines of the script in Alexandria with a notepad or whatever to find what's missing.
 
-Il suffit de lire les premières lignes du script sous l'installation avec un editeur de texte (visual studio code, ...) ou autre pour trouver ce qui manque.
+If you would like to run with python **YOU WILL NEED THE IMAGE .png PLACED IN THE SAME DIRECTORY OF THE RUNNING SCRIPT**.
 
-Si vous souhaitez utiliser python **Vous aurez besoin de l'image `.png` placée dans le dossier `ico`**.
-
-Vous pouvez également ajouter un `w` à l'extension (comme `script.pyw`). Cela signifie `windowed mode`, pour lancer le script python sans le CMD mais c'est toujours un fichier python commun.
+Also you can add a w to the extension (like `script.pyw`). It means `windowed mode`, to launch the python script without the CMD but it's still a common python file.
 
 
-## 3. Compiler le script vous meme
+## 3. Compile the script by yourself 
 
 ### Instructions 
 
-Pour créer votre propre exécutable à partir du fichier python, vous devez installer pyinstaller et python. 
+To create your own executable from the python file, you will need to install pyinstaller and python. 
 
-Voici les étapes à suivre :
+Here are the steps you should follow:
 
-* Télécharger python 3.11.1
+* Download python 3.11.1
 
-N'oubliez pas de l'ajouter à votre chemin d'accès avec l'installeur ou dans l'environnement des variables ( donc redémarrez votre PC après l'installation ), voici le lien : https://www.python.org/ftp/python/3.11.1/python-3.11.1-amd64.exe
+Don't forget to add it to your path with the installer or in variables environment ( so reboot your PC after the installation ), here is the link : https://www.python.org/ftp/python/3.11.1/python-3.11.1-amd64.exe
 
-* Ouvrez votre CMD en tant qu'administrateur et tapez la commande suivante :
+* Open your CMD as an administrator and type the following command:
 
 ```
 python -m pip install pyinstaller
 ```
-* Vous pouvez maintenant soit l'installé avec un fichier.spec en tapant dans le répertoire de votre projet :
-```
-pyinstaller VOTRE_FICHIER.spec
 
-```
-En général je fourni un fichier .spec vide dans le dossier nommé "script", si il n'y est pas il y en a un ici dans un de mes autres logiciel tout les cas :
-
-https://github.com/SECRET-GUEST/trieur/blob/main/Script/AKOUN_trieur_v1.0.0.spec
-
-* tapez la commande suivante dans votre fenêtre cmd, en remplaçant les chemins d'accès aux fichiers par les vôtres :
+* Once the installation is complete, type the following command in your cmd window, replacing the file paths with your own:
 
 ```
 pyinstaller --onefile --icon="...YOUR PATH.../YOUR ICON.ico" --add-data "...YOUR PATH.../ico;ico" --noconsole test.py
 
 ```
 
-Voici l'explication des différentes options :
+Here are the explanations of the different options:
 
-- `--onefile` : crée un seul exécutable qui inclut toutes les dépendances.
+- `--onefile` :creates a single executable that includes all dependencies.
 
-- `--icon=icon.ico` : spécifie l'icône à utiliser pour l'exécutable (remplacez icon.ico par le chemin vers votre fichier d'icône).
+- `--icon=icon.ico` :specifies the icon to use for the executable (replace icon.ico with the path to your icon file).
 
 - `--add-data "path/to/file;folder_name"` :
 
-ajoute les fichiers externes requis par le programme. Le chemin d'accès au fichier et le nom du dossier dans lequel le fichier sera extrait doivent être séparés par un point-virgule `;`. Vous pouvez ajouter plusieurs fichiers en les séparant par des points-virgules.
+adds external files required by the program. The path to the file and the name of the folder in which the file will be extracted should be separated by a semicolon `;`. You can add multiple files by separating them with semicolons.
 
-- ` script.py` : spécifie le nom de votre script Python.
+- ` script.py`: specifies the name of your Python script.
 
-- ` --noconsole` : cache la console lorsque l'exécutable est lancé.
+- ` --noconsole` : hides the console when the executable is run.
 
-Veillez à remplacer les parties coupées par les noms de vos fichiers et dossiers. Notez également que le chemin d'accès doit être spécifié en fonction du système d'exploitation sur lequel vous travaillez.
 
-Après avoir exécuté cette commande, vous devriez avoir un seul exécutable qui inclut toutes les dépendances, les fichiers externes et une icône personnalisée, et qui n'affiche pas la console lors de l'exécution.
+Make sure to replace the snipped parts with the names of your files and folders. Also note that the path should be specified based on the operating system you are working on.
 
-Vous pouvez également :
+After running this command, you should have a single executable that includes all dependencies, external files, and a custom icon, and does not show the console when running.
 
-## 4. Créer un fichier batch à exécuter 
+Alternatively you can also :
 
-- [ ] Créer un fichier texte
+## 4. Create a batch file to run 
 
-- [ ] Dans le fichier texte, tapez et écrivez (et changez/complétez le chemin, le premier est pour python, le second pour script.py) ;
+- [ ] Create a text file
+
+- [ ] In the text file type and write (and change/ complete the path, first is for python, 2nd is for script.py);
 
 ```
 C:\YOUR PATH TO PYTHON \python.exe" "C:\ **YOUR PATH TO THE SCRIPT** \script.pyw"
 ```
 
-Si Python est dans le chemin, vous pouvez simplement ; 
+If Python is in path, you can just ; 
 
 ```
 python "C:\ **YOUR PATH TO THE SCRIPT** \script.pyw"
 ```
 
-- [ ] Renommez le `new_file.txt` par `script.bat` puis cliquez simplement sur et le programme s'exécutera.
+- [ ] Rename the `new_file.txt` by `script.bat` then just click on and it will run the progra
 
 ```
      _ ._  _ , _ ._            _ ._  _ , _ ._    _ ._  _ , _ ._      _ ._  _ , _ .__  _ , _ ._   ._  _ , _ ._   _ , _ ._   .---.  _ ._   _ , _ .__  _ , _ ._   ._  _ , _ ._      _ ._  _ , _ .__  _ , _ . .---<__. \ _
