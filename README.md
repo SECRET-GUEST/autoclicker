@@ -28,15 +28,55 @@ I fixed common issues,  the recorder is now stable on my equipements, but the ne
 I would like to put random delay time that could be set, also make a handler for issues, and add possibility to customize easily themes and more ideas, I will relase the whole app soon so stay tuned even if I know nobody will read this ^^
 
 
-## :scroll: License
+
+# :scroll: License
 
 This repository is released under the [MIT License](LICENSE). Please see the `LICENSE` file for more information.
 
-## :question: Support & Questions
+# :question: Support & Questions
 
 If you have any questions or need support, please feel free to open an issue or join my twitter.
 
-riginal script for python 3.11.
+
+
+```
+██   ██  ██████  ██     ██     ████████  ██████      ██████  ██    ██ ███    ██ 
+██   ██ ██    ██ ██     ██        ██    ██    ██     ██   ██ ██    ██ ████   ██ 
+███████ ██    ██ ██  █  ██        ██    ██    ██     ██████  ██    ██ ██ ██  ██ 
+██   ██ ██    ██ ██ ███ ██        ██    ██    ██     ██   ██ ██    ██ ██  ██ ██ 
+██   ██  ██████   ███ ███         ██     ██████      ██   ██  ██████  ██   ████ 
+```
+
+Here's a tutorial explaining different ways to run the files:
+
+# For **MAC** & **Linux** users:
+
+Since this script is designed for Windows users, you should probably first improve the code.
+
+However, here is the procedure to run the script:
+
+* :computer:: [MAC] - https://macosx-faq.com/how-to-run-python-script/
+* :keyboard: [LINUX] - open a terminal, then `cd` to the script's directory and type:
+
+```
+python script.pyw
+
+```
+(where `script.pyw` is obviously the name of the file you've downloaded)
+
+# :desktop_computer: For **Microsoft** users:
+
+Because this script is made by PyInstaller, it could be detected as malware. (sorry, but I will not spend money to just be approved by "security" software/websites, you have the code, and here are possibilities to help you run it:
+
+## :large_orange_diamond: 1. Run by simple click on `APPLICATION.exe`
+
+The `.exe` file is a portable version created for Microsoft users with PyInstaller, allowing you to download and use this file alone, without any additional files.
+
+If there is no `.exe` file available, it means that the application is stored in a directory, as a portable version is not provided. In this case, simply locate the `APP_NAME.exe` file within the directory and launch it with a single click. You can place the folder anywhere you like and create a shortcut to the executable file for easy access.
+
+## :large_orange_diamond: 2. Run with Python
+
+`Python script` is a directory with the original script for python 3.11.
 
 In case you have a lower version, you may have to download module imported not included with your version. Just read the first lines of the script in Alexandria with a notepad or whatever to find what's missing.
 
