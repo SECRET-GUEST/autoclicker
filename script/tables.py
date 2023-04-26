@@ -117,7 +117,7 @@
 #| |\ | [__   |  |__| |    |    |__|  |  | |  | |\ |
 #| | \| ___]  |  |  | |___ |___ |  |  |  | |__| | \|
     
-import sys, time,threading,uuid
+import sys, time,threading,uuid, random
 
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout,QHBoxLayout, QTableWidget, 
 QPushButton,QCheckBox,  QWidget, QComboBox, QLabel, QLineEdit, QSpinBox, QDoubleSpinBox, QFileDialog)
@@ -129,6 +129,7 @@ from pynput.mouse import Listener as MouseListener
 from pynput.keyboard import Key, Controller as KeyboardController
 from pynput.keyboard import Listener
 
+from logInfo import configLogs
 
 #___  ____ _ _ _ ____ ____    ___  _    ____ _  _ ___
 #|__] |  | | | | |___ |__/    |__] |    |__| |\ |  |
@@ -647,7 +648,16 @@ class DarthBMO(QMainWindow):
             # Otherwise, loop indefinitely
             loop_count = self.loop_spinbox.value() if not self.loop_checkbox.isChecked() else float('inf')
             iteration = 0
-    
+
+            #Add a random delay if wanted
+            def get_random_delay(delay):
+                if self.random_checkbox.isChecked():
+                    random_frames = random.randint(0, self.random_spinbox.value())
+                    return delay + random_frames / 60  # convert frames in 60fps
+                else:
+                    return delay
+                
+
             # Perform the script for the specified number of iterations or until the stop button is pressed
             while iteration < loop_count and not self.stop_script:
                 try:
@@ -660,7 +670,7 @@ class DarthBMO(QMainWindow):
     
                         # Determine the action to perform based on the user input
                         action_type = self.table.cellWidget(row, 0).currentText()
-                        delay = self.table.cellWidget(row, 4).value()
+                        delay = get_random_delay(self.table.cellWidget(row, 4).value())
     
                         # If the action is a click or double click, determine the coordinates of the click
                         if action_type in ["Clic", "Double clic"]:
@@ -867,6 +877,13 @@ class DarthBMO(QMainWindow):
 
         press_exit = QLabel("Press F8 to stop the loop")
 
+
+        self.random_checkbox = QCheckBox("Randomisation")
+        self.random_spinbox = QSpinBox()
+        self.random_spinbox.setRange(0, 999999999)  # Mettez ici la plage de valeurs souhaitée pour les frames
+        self.random_spinbox.setValue(0)
+
+
         launch_script_button = QPushButton("F I N I S H   H I T !")
         launch_script_button.clicked.connect(self.launch_script_thread)
 
@@ -884,12 +901,16 @@ class DarthBMO(QMainWindow):
         Vlay_BMO.addLayout(Hlay_BMO)
         Hlay_BMO.addWidget(btn_save_script)
         Hlay_BMO.addWidget(btn_load_script)
+
         Vlay_BMO.addWidget(self.table)
+
         Vlay_BMO.addWidget(btn_add_row)
+
         Vlay_BMO.addSpacing(10)
         Vlay_BMO.addLayout(Hlay_BMO_time_machine)
         Hlay_BMO_time_machine.addWidget(self.time_machine_checkbox)
         Hlay_BMO_time_machine.addWidget(self.time_machine_spinbox)
+
         Vlay_BMO.addSpacing(10)
         Vlay_BMO.addWidget(btn_sacrifice)
         Vlay_BMO.addSpacing(10)
@@ -902,6 +923,13 @@ class DarthBMO(QMainWindow):
 
         Vlay_BMO.addWidget(press_exit)
         Vlay_BMO.addSpacing(20)
+
+        Hlay_random_delay = QHBoxLayout()
+        Vlay_BMO.addSpacing(10)
+        Vlay_BMO.addLayout(Hlay_random_delay)
+        Hlay_random_delay.addWidget(self.random_checkbox)
+        Hlay_random_delay.addWidget(self.random_spinbox)
+
         Vlay_BMO.addWidget(launch_script_button)
 
 
@@ -916,6 +944,13 @@ class DarthBMO(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+
+    logger = configLogs("Autoclicker", "autoclicker_errors.log")
+    logger.debug("Debug")
+    logger.info("Info")
+    logger.warning("Warning")
+    logger.error("Error")
+    logger.critical("Critical issue")
 
     mainWin = DarthBMO()
     mainWin.show()
