@@ -24,7 +24,7 @@ You can already run a stable version directly from the scripts.
 
 
 
-## Common issues I'm working on :
+## Common issues :
 
 :black_small_square: Use recorder + tables at same time will result to a crash. I'm working on the logger.
 
