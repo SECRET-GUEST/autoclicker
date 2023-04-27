@@ -44,6 +44,9 @@ You can already run a stable version directly from the scripts.
 
 
 
+![image](https://user-images.githubusercontent.com/92639080/234765247-d34deb5b-b194-4b2c-bbcc-aa918d9fcc1a.png)
+
+
 
 ## Usage / features : 
 
