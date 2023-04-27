@@ -13,7 +13,7 @@
 ![PyQt5](https://img.shields.io/badge/GUI-PyQt5-green)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow)
 
-# WARNING : Just a preview for now, you will have to wait 
+# WARNING : Just a preview (release asap)
 
 ## Description :
 
