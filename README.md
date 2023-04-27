@@ -92,19 +92,20 @@ With this feature you can record and replay the action you made without using ta
 
 
 
-
 ### :white_flag: Overlay :
 
-The **overlay** can **display an image** **front of all** your windowed app or games, you can for example use the image to win a **pixel war**, this tool is also downloadable, separate from the autoclicker here : https://github.com/SECRET-GUEST/Layer-one
+The **overlay** can **display an image** **front of all** where you can **click through** your windowed app or games, you can for example use the image to win a **pixel war**, this tool is also downloadable, separate from the autoclicker here : https://github.com/SECRET-GUEST/Layer-one
 
 Once the **image** is set, you can change its **opacity** or use the configure section to **resize** the **picture** , or give it a **position** .
-
 
 
 ### :pirate_flag: Hidden features
 
 Click on the weird logo and see (don't worry I don't give a *F* of your datas).
 
+
+
+![image](https://user-images.githubusercontent.com/92639080/234780373-d39b6844-f243-4180-bac9-6cde778e0c6d.png)
 
 
 ## :scroll: License
