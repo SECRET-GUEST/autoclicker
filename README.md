@@ -13,7 +13,7 @@
 ![PyQt5](https://img.shields.io/badge/GUI-PyQt5-green)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow)
 
-# WARNING : Just a preview (release asap)
+![5](https://user-images.githubusercontent.com/92639080/234941921-0068ef8c-ff9f-44eb-90f7-c382955a3086.png)
 
 ## Description :
 
@@ -23,7 +23,9 @@
 - Tables to set the autoclicker manually
 - Upload commands for table in a text file that you can manually rewrite easily with a text editor (here for example : https://github.com/SECRET-GUEST/ecrire )
 - Overlay that you can also find alone in here : https://github.com/SECRET-GUEST/Layer-one
+- Multiples themes 
 
+![4](https://user-images.githubusercontent.com/92639080/234941881-0069b75d-89e6-4b2c-ba6e-47357a6fe738.png)
 
 
 ## Common issues :
@@ -32,21 +34,11 @@
 
 :black_small_square: Sacrifice button will not advertise you if you're sure.
 
-:black_small_square: Window can't be resized.
-
-:black_small_square: Leaving the app during an infinite loop will let the app continue it's process until you kill it by pressing `F8` key .
-
 :black_small_square: No errors messages if the app crash .
-
-:black_small_square: Terrible frontend.
 
 :black_small_square: Problem with left click turning into right click sometimes for unknown reason.
 
-:black_small_square: Overlay isn't working
-
 :black_small_square: Troubles using `,` for new separators in keyword feature.
-
-:black_small_square: ? section will make a crash because no README.md has been assigned to this section.
 
 
 ![image](https://user-images.githubusercontent.com/92639080/234765247-d34deb5b-b194-4b2c-bbcc-aa918d9fcc1a.png)
@@ -108,9 +100,7 @@ Once the **image** is set, you can change its **opacity** or use the configure s
 
 Click on the weird logo and see (don't worry I don't give a *F* of your datas).
 
-
-
-![image](https://user-images.githubusercontent.com/92639080/234780373-d39b6844-f243-4180-bac9-6cde778e0c6d.png)
+![1](https://user-images.githubusercontent.com/92639080/234941989-ea5814ea-3a2a-4d49-913c-5621eb4e9416.png)
 
 
 ## :scroll: License
