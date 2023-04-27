@@ -36,7 +36,7 @@ You can already run a stable version directly from the scripts.
 
 :black_small_square: No errors messages if the app crash .
 
-:black_small_square: Horrible frontend.
+:black_small_square: Terrible frontend.
 
 :black_small_square: Problem with left click turning into right click sometimes for unknown reason.
 
