@@ -28,12 +28,46 @@ I fixed common issues,  the recorder is now stable on my equipements, but the ne
 I would like to put random delay time that could be set, also make a handler for issues, and add possibility to customize easily themes and more ideas, I will relase the whole app soon so stay tuned even if I know nobody will read this ^^
 
 
+## Actual issues I'm working on :
 
-# :scroll: License
+- Use recorder + tables at same time will result to a crash. I'm working on the logger.
+- Sacrifice button will not advertise you if you're sure.
+- Window can't be resized.
+- Leaving the app during an infinite loop will let the app continue it's process until you kill it by pressing "F8" key .
+- No errors messages if the app crash .
+- Horrible frontend.
+- Problem with left click turning into right click sometimes for unknown reason
+- ? section will make a crash because no README.md has been assigned to this section.
+
+## Usage / features : 
+
+### All app : 
+
+- Zoom : You can use ctrl + /- or scroll to zoom the whole app
+- Windows : to find other features
+
+### Tables :
+
+- Save & load : You can save and load script in file `.txt` that you can easily modify with a text editor.
+- Delay : Set an amount of time to play the actions
+
+- Click, double click, move : You have to position with the position button or set it manually . Move = move the mouse without clicking
+- Press : Press the choosen key, then in text you can set also how much you would like to press that key.
+- Combo : Make a combo until 5 keys pressed in the same time.
+- Scroll : Positive value for upside, and downside for the negative one. You can also record the frame (don't forget to stop it).
+- Text : Type a text without a limit of characters, but you will better do to use combo to copy paste big amounts from a text file.
+- Keywords : for website like github asking you to press keys to add keywords, so you can put a list of words separate by coma (and comas only), then set another key you would like to use for new separator.
+- Wait : just wait the delay time
+
+- Time machine modulator : Upgrade or downgrade all delays
+- Reach infinity by ticking the checkbox, or simply choose the number of loop in the spinbox, you can do both but why would you do that ? :shrug:	
+- Nanosecond entropy injector : Probably the reason why you are here, this feature can set a new random amount of time between each actions 1 sec = 100 frames.
+
+## :scroll: License
 
 This repository is released under the [MIT License](LICENSE). Please see the `LICENSE` file for more information.
 
-# :question: Support & Questions
+## :question: Support & Questions
 
 If you have any questions or need support, please feel free to open an issue or join my twitter.
 
