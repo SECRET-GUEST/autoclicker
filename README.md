@@ -13,9 +13,11 @@
 ![PyQt5](https://img.shields.io/badge/GUI-PyQt5-green)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow)
 
-#  New version coming soon
+# WARNING : Just a preview for now, you will have to wait 
 
-You can already run a stable version directly from the scripts.
+## Description :
+
+**HardWorkingBruh** is a powerful and versatile tool designed to streamline your repetitive tasks and actions on your computer. Say hello to your new bruh for automating tasks and making your life easier! **HardWorkingBruh**  is here to boost your productivity and take care of your **repetitive tasks** . Perfect for **gamers** , **coders** , or anyone looking to save time on **everyday tasks** . With its powerful tables, flexible recording, and handy **overlay** features, this **autoclicker** is the ultimate companion for all your clicking needs. Whether it's **pixel wars**, **keyword lists**, or just a **quick combo press**, this bruh's got your back!
 
 ## news :
 - Tables to set the autoclicker manually
@@ -39,6 +41,8 @@ You can already run a stable version directly from the scripts.
 :black_small_square: Terrible frontend.
 
 :black_small_square: Problem with left click turning into right click sometimes for unknown reason.
+
+:black_small_square: Overlay isn't working, but it's working here : https://github.com/SECRET-GUEST/Layer-one
 
 :black_small_square: ? section will make a crash because no README.md has been assigned to this section.
 
