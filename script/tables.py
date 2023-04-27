@@ -141,11 +141,10 @@ from pynput.keyboard import Listener
 
 class DarthBMO(QMainWindow):
 
-    def __init__(self,logger):
+    def __init__(self):
         super().__init__()
 
-        #Error handler 
-        self.logger = logger
+  
 
         # Initialize some variables needed to record the scroll method
         self.recording_scroll = False
@@ -522,8 +521,9 @@ class DarthBMO(QMainWindow):
         # Create a dropdown widget to select the action type for the new row and add it to the table
         action_type_dropdown = QComboBox()
         action_type_dropdown.addItems(["Clic", "Double clic","Move", "Press", "Combo", "Scroll", "Text", "Keywords","Wait"])
-        action_type_dropdown.currentIndexChanged.connect(lambda: self.update_row_widgets(row))
         self.table.setCellWidget(row, 0, action_type_dropdown)
+        action_type_dropdown.currentIndexChanged.connect(lambda: self.update_row_widgets(row))
+
 
         # Create a button widget to delete the new row and add it to the table
         delete_button = QPushButton("-")
@@ -779,34 +779,46 @@ class DarthBMO(QMainWindow):
 
 
                         elif action_type == "Keywords":
-                            # Get the text of the keywords to type and the selected separator from the table
-                            keywords_text = self.table.cellWidget(row, 2).text()
+                            # Get the text of the keywords to type from the table
+                            keywords_text = self.table.cellWidget(row, 2).text()                        
+
+                            # Get the separator widget and current separator text
                             separator_widget = self.table.cellWidget(row, 1)
-                            separator = separator_widget.currentText() if isinstance(separator_widget, QComboBox) else ","
-                            # If the separator is "Enter", use the newline character instead
+                            if isinstance(separator_widget, QComboBox):
+                                separator = separator_widget.currentText()
+                            else:
+                                separator = ","                     
+
+                            # Replace the comma separator in the keywords text with the chosen separator
                             if separator == "Enter":
-                                separator = "\n"
-                            
+                                keywords_text = keywords_text.replace(',', '\n')
+                            else:
+                                keywords_text = keywords_text.replace(',', separator)                       
+
+
                             # Split the keywords text using the separator and type each keyword
                             keywords = keywords_text.split(separator)
-
+                        
                             for i, keyword in enumerate(keywords):
                                 keyword = keyword.strip() # Remove any leading or trailing whitespace
-
+                        
                                 if keyword:
                                     keyboard_controller.type(keyword) # Type the keyword
                                     # Type the separator if there are more keywords to type
                                     if i < len(keywords) - 1:
                                         if separator != "\n":
-                                            keyboard_controller.type(separator) # Type the separator character
-
+                                            # Type the separator character
+                                            with keyboard_controller.pressed(Key.shift):
+                                                keyboard_controller.press(separator)
+                                                keyboard_controller.release(separator)
                                         else:
                                             # If the separator is the newline character, press the enter key instead
                                             keyboard_controller.press(Key.enter)
                                             keyboard_controller.release(Key.enter)
-
+                        
                                 # Add a delay to give time for the typing action to be completed
                                 time.sleep(delay)
+                        
                         
 
 
