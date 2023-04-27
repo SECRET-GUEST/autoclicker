@@ -44,8 +44,9 @@
 
 :black_small_square: Overlay isn't working, but it's working here : https://github.com/SECRET-GUEST/Layer-one
 
-:black_small_square: ? section will make a crash because no README.md has been assigned to this section.
+:black_small_square: Troubles using `,` for new separators in keyword feature.
 
+:black_small_square: ? section will make a crash because no README.md has been assigned to this section.
 
 
 ![image](https://user-images.githubusercontent.com/92639080/234765247-d34deb5b-b194-4b2c-bbcc-aa918d9fcc1a.png)
