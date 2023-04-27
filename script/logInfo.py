@@ -114,39 +114,55 @@
    
 
 import logging
+from PyQt5.QtWidgets import QMessageBox
+from msgBox import FreeWill, tripleChoice
 
-def configLogs(logger_name, log_file):
-    # Configure the logger with the given logger name and log file
-    logger = logging.getLogger(logger_name)
-    logger.setLevel(logging.DEBUG)
+class logz(logging.Logger):
+    def __init__(self, name, level=logging.NOTSET):
+        super().__init__(name, level)
 
-    # Set the log message format
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    @classmethod
+    def configLogs(cls, logger_name, log_file, use_qt_dialogs=False):
+        # Configure the logger with the given logger name and log file
+        logger = cls(logger_name)
+        logger.setLevel(logging.DEBUG)
 
-    # Save logs to a file
-    file_handler = logging.FileHandler(log_file)
-    file_handler.setFormatter(formatter)
-    logger.addHandler(file_handler)
+        # Set the log message format
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-    # Display logs in the console
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(formatter)
-    logger.addHandler(console_handler)
+        # Save logs to a file
+        file_handler = logging.FileHandler(log_file)
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
 
-    return logger
+        if use_qt_dialogs:
+            # Display logs in QMessageBox dialogs
+            qt_handler = logging.Handler()
+            qt_handler.setFormatter(formatter)
+            qt_handler.emit = lambda record: logger.show_error(None, qt_handler.format(record)) if record.levelno >= logging.ERROR else None
+            logger.addHandler(qt_handler)
+        else:
+            # Display logs in the console
+            console_handler = logging.StreamHandler()
+            console_handler.setFormatter(formatter)
+            logger.addHandler(console_handler)
 
-#____ ____ ____ _  _ ____ ___    _    ____ _  _ _  _ ____ _  _
-#|__/ |  | |    |_/  |___  |     |    |__| |  | |\ | |    |__|
-#|  \ |__| |___ | \_ |___  |     |___ |  | |__| | \| |___ |  |
-                
-#ENDING | https://www.youtube.com/watch?v=CgZVrvQZB6U&ab_channel=SECRETGUEST :3
+        return logger
 
 
-# Example usage
-if __name__ == "__main__":
-    logger = configLogs("MyApplication", "my_application.log")
-    logger.debug("Debug level message")
-    logger.info("Info level message")
-    logger.warning("Warning level message")
-    logger.error("Error level message")
-    logger.critical("Critical level message")
+    def show_choice(self, parent, message, action):
+        free_will = FreeWill(parent, message, action)
+        free_will.exec_and_call_action()
+        
+    def show_triple_Choice(self, parent, message, action_yes, action_no, custom_action_text, custom_action):
+        loop_warning = tripleChoice(parent, message, action_yes, action_no, custom_action_text, custom_action)
+        loop_warning.exec_and_call_actions()
+
+
+    def show_error(self, parent, message):
+        error_box = QMessageBox(parent)
+        error_box.setIcon(QMessageBox.Critical)
+        error_box.setWindowTitle("Error")
+        error_box.setText(message)
+        error_box.exec_()
+

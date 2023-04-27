@@ -119,17 +119,16 @@
     
 import sys, time,threading,uuid, random
 
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout,QHBoxLayout, QTableWidget, 
-QPushButton,QCheckBox,  QWidget, QComboBox, QLabel, QLineEdit, QSpinBox, QDoubleSpinBox, QFileDialog)
 from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout,QHBoxLayout, QTableWidget, QSpacerItem,
+                            QPushButton,QCheckBox,  QWidget, QComboBox, QLabel, QLineEdit, QSpinBox, 
+                            QDoubleSpinBox, QFileDialog,QSizePolicy)
 
 from pynput import mouse
 from pynput.mouse import  Controller as MouseController, Button
 from pynput.mouse import Listener as MouseListener
 from pynput.keyboard import Key, Controller as KeyboardController
 from pynput.keyboard import Listener
-
-from logInfo import configLogs
 
 #___  ____ _ _ _ ____ ____    ___  _    ____ _  _ ___
 #|__] |  | | | | |___ |__/    |__] |    |__| |\ |  |
@@ -142,8 +141,11 @@ from logInfo import configLogs
 
 class DarthBMO(QMainWindow):
 
-    def __init__(self):
+    def __init__(self,logger):
         super().__init__()
+
+        #Error handler 
+        self.logger = logger
 
         # Initialize some variables needed to record the scroll method
         self.recording_scroll = False
@@ -362,6 +364,13 @@ class DarthBMO(QMainWindow):
 
 
 
+    def wait_widgets(self, row):
+        return [None, None, None, self.create_delay_spinbox()]
+
+
+
+
+
 #_  _ ____ _ _  _    ____ _  _ _  _ ____ ___ _ ____ _  _ ____ 
 #|\/| |__| | |\ |    |___ |  | |\ | |     |  | |  | |\ | [__  
 #|  | |  | | | \|    |    |__| | \| |___  |  | |__| | \| ___] 
@@ -480,7 +489,8 @@ class DarthBMO(QMainWindow):
             "Combo": self.combo_widgets(row),
             "Scroll": self.scroll_widgets(row),
             "Text": self.text_widgets(row),
-            "Keywords": self.keywords_widgets(row)
+            "Keywords": self.keywords_widgets(row),
+            "Wait": self.wait_widgets(row)
         }
         # Add the widgets for the selected action type to the row
         self.add_widgets(row, widgets[action_type])
@@ -511,7 +521,7 @@ class DarthBMO(QMainWindow):
 
         # Create a dropdown widget to select the action type for the new row and add it to the table
         action_type_dropdown = QComboBox()
-        action_type_dropdown.addItems(["Clic", "Double clic","Move", "Press", "Combo", "Scroll", "Text", "Keywords"])
+        action_type_dropdown.addItems(["Clic", "Double clic","Move", "Press", "Combo", "Scroll", "Text", "Keywords","Wait"])
         action_type_dropdown.currentIndexChanged.connect(lambda: self.update_row_widgets(row))
         self.table.setCellWidget(row, 0, action_type_dropdown)
 
@@ -800,6 +810,9 @@ class DarthBMO(QMainWindow):
                         
 
 
+                        elif action_type == "Wait":
+                            time.sleep(delay)
+            
     
                 # Catch any exceptions that occur during script execution and print an error message
                 except Exception as e:
@@ -846,7 +859,7 @@ class DarthBMO(QMainWindow):
         btn_add_row.clicked.connect(self.add_row)
 
 
-        self.time_machine_checkbox = QCheckBox("Time machine :")
+        self.time_machine_checkbox = QCheckBox("Time machine modulator")
         self.time_machine_spinbox = QSpinBox()
         
 
@@ -865,20 +878,13 @@ class DarthBMO(QMainWindow):
         btn_sacrifice = QPushButton("Sacrifice all")
         btn_sacrifice.clicked.connect(self.clear_table)
 
-        self.loop_checkbox = QCheckBox("Reach Infinity")
-
-        loop_label = QLabel("or only")
+        self.loop_checkbox = QCheckBox("Reach Infinity > F8 < to exit, or loop")
 
         self.loop_spinbox = QSpinBox()
         self.loop_spinbox.setRange(1, 999999999)
         self.loop_spinbox.setValue(1)
 
-        loop_label_end = QLabel("time")
-
-        press_exit = QLabel("Press F8 to stop the loop")
-
-
-        self.random_checkbox = QCheckBox("Randomisation")
+        self.random_checkbox = QCheckBox("Nanosecond entropy injector")
         self.random_spinbox = QSpinBox()
         self.random_spinbox.setRange(0, 999999999)  # Mettez ici la plage de valeurs souhaitée pour les frames
         self.random_spinbox.setValue(0)
@@ -888,13 +894,13 @@ class DarthBMO(QMainWindow):
         launch_script_button.clicked.connect(self.launch_script_thread)
 
 
-
-        #Layout instructions
+        # Layout instructions
         Vlay_BMO = QVBoxLayout()
         Hlay_BMO = QHBoxLayout()
+        Hlay_live_or_die = QHBoxLayout()
         Hlay_BMO_loop = QHBoxLayout()
         Hlay_BMO_time_machine = QHBoxLayout()
-
+        Hlay_random_delay = QHBoxLayout()
 
         main_widget.setLayout(Vlay_BMO)
 
@@ -904,32 +910,28 @@ class DarthBMO(QMainWindow):
 
         Vlay_BMO.addWidget(self.table)
 
-        Vlay_BMO.addWidget(btn_add_row)
+        Vlay_BMO.addLayout(Hlay_live_or_die)
+        Hlay_live_or_die.addWidget(btn_add_row)
+        Hlay_live_or_die.addWidget(btn_sacrifice)
 
         Vlay_BMO.addSpacing(10)
         Vlay_BMO.addLayout(Hlay_BMO_time_machine)
         Hlay_BMO_time_machine.addWidget(self.time_machine_checkbox)
         Hlay_BMO_time_machine.addWidget(self.time_machine_spinbox)
 
-        Vlay_BMO.addSpacing(10)
-        Vlay_BMO.addWidget(btn_sacrifice)
-        Vlay_BMO.addSpacing(10)
 
+        Vlay_BMO.addSpacing(10)
         Vlay_BMO.addLayout(Hlay_BMO_loop)
         Hlay_BMO_loop.addWidget(self.loop_checkbox)
-        Hlay_BMO_loop.addWidget(loop_label)
         Hlay_BMO_loop.addWidget(self.loop_spinbox)
-        Hlay_BMO_loop.addWidget(loop_label_end)
+        Hlay_BMO_loop.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum))
 
-        Vlay_BMO.addWidget(press_exit)
-        Vlay_BMO.addSpacing(20)
-
-        Hlay_random_delay = QHBoxLayout()
         Vlay_BMO.addSpacing(10)
         Vlay_BMO.addLayout(Hlay_random_delay)
         Hlay_random_delay.addWidget(self.random_checkbox)
         Hlay_random_delay.addWidget(self.random_spinbox)
 
+        Vlay_BMO.addSpacing(20)
         Vlay_BMO.addWidget(launch_script_button)
 
 
@@ -944,13 +946,6 @@ class DarthBMO(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-
-    logger = configLogs("Autoclicker", "autoclicker_errors.log")
-    logger.debug("Debug")
-    logger.info("Info")
-    logger.warning("Warning")
-    logger.error("Error")
-    logger.critical("Critical issue")
 
     mainWin = DarthBMO()
     mainWin.show()

@@ -112,14 +112,16 @@
 #| | \| ___]  |  |  | |___ |___ |  |  |  | |__| | \|
          
 
-import sys
+import sys,os
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget, QVBoxLayout, QAction,  QMenu, QDialog, QLabel, QVBoxLayout,QTextEdit
-from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon
 
-from recorder import HardWorkingBruh, Recorder
+from recorder import Recorder
+
 from tables import DarthBMO
 from overlay import layer0 as Overlay
-
+from zoom_handler import enable_zoom
+from logInfo import logz
 
 #___  ____ _ _ _ ____ ____    ___  _    ____ _  _ ___
 #|__] |  | | | | |___ |__/    |__] |    |__| |\ |  |
@@ -129,15 +131,33 @@ from overlay import layer0 as Overlay
 #OPENING | https://www.youtube.com/watch?v=_85LaeTCtV8 :3
 
 
+
+#function to make an exe file with py to exe
+def ressource_path(relative_path):
+    try:
+        base_path=sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath('.')
+    return os.path.join(base_path ,relative_path)
+#to make it works, you have to rename all your path with ressource_path (/path/) WHEN YOU WILL TURN THE SCRIPT TO EXE
+#Example : /icon/lol.png  BECOME  ressource_path(/icon/lol.png)
+
+
+
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
         #I'm using style sheet in txt because python doesn't read well CSS and JSON 
         #is harder to use and not that much optimised
-        stylesheet_path = "style/style1.txt"
+        stylesheet_path = ressource_path("style/style1.txt")
         stylesheet = self.load_stylesheet(stylesheet_path)
         self.setStyleSheet(stylesheet)
+
+        # Enable zooming for this window
+        enable_zoom(self)
 
         self.GUI()
 
@@ -148,56 +168,6 @@ class MainWindow(QMainWindow):
             stylesheet = file.read()
         return stylesheet
 
-
-
-#___  ____ ____ _  _ 
-#  /  |  | |  | |\/| 
-# /__ |__| |__| |  | 
-
-
-
-# We now create a function to zoom/enlarge the entire window and our applications
-    def scale_fonts(self, widget, scale_factor):
-        for child in widget.children():
-            if isinstance(child, QWidget):
-                
-                # We set the zoom on the font size
-                font = child.font()
-                font.setPointSizeF(font.pointSizeF()*scale_factor)
-                child.setFont(font)
-
-                self.scale_fonts(child, scale_factor) # We apply the zoom factor to all our widgets
-
-
-# Function to zoom with the mouse wheel
-    def wheelEvent(self, event):
-        if QApplication.keyboardModifiers() == Qt.ControlModifier: # If we press ctrl + the wheel ...
-            delta = event.angleDelta().y() # we define the top and bottom of the zoom
-
-            if delta > 0: # If we scroll up we zoom, and vice versa
-                self.zoom(1.1)
-
-            elif delta < 0:
-                self.zoom(1 / 1.1)
-
-
-# Function to zoom with the "+" and "-" keys
-    def keyPressEvent(self, event):
-
-        if event.key() == Qt.Key_Plus: # If we press + we zoom, and vice versa
-            self.zoom(1.1)
-
-        elif event.key() == Qt.Key_Minus:
-            self.zoom(1 / 1.1)
-        else:
-            super().keyPressEvent(event)
-
-
-# And our function to connect and zoom according to the other functions defined earlier
-    def zoom(self, scale_factor):
-        self.scale_fonts(self, scale_factor)
-
-        
 
 
 #____ ___ _  _ ____ ____    ____ _  _ _  _ ____ ___ _ ____ _  _ ____ 
@@ -246,7 +216,7 @@ class MainWindow(QMainWindow):
 
     def help_dialog(self):
         # Read the Markdown file
-        with open('README.md', 'r', encoding='utf-8') as file:
+        with open(ressource_path('README.md'), 'r', encoding='utf-8') as file:
             md_content = file.read()
 
         # Display the plain text content in a QDialog
@@ -266,10 +236,16 @@ class MainWindow(QMainWindow):
    
 
     def GUI(self):
+        # First, configure the error handler
+        logger = logz.configLogs("Autoclicker", "ERRORS.log", use_qt_dialogs=True)
+        tables = DarthBMO(logger)
+        recorder = Recorder(logger)
+        overlay = Overlay(logger)
 
-
-        self.setWindowTitle("Interface Exemple")
-        self.setGeometry(100, 100, 720, 480)
+        # Now the GUI
+        self.setWindowTitle(" Lemme do it 4 U 🥺")
+        self.setWindowIcon(QIcon(ressource_path("ico/autoclicker.png")))
+        self.setGeometry(100, 100, 740, 470)
 
         #Menus
         menu_bar = self.menuBar()
@@ -302,16 +278,16 @@ class MainWindow(QMainWindow):
         help_action.triggered.connect(self.help_dialog)
 
 
-
         #Tabs 
         self.tabs = QTabWidget()
 
         #Add and configure tabs
-        self.overlay_tab = Overlay()
-        self.autoclicker_tab = DarthBMO()
-        self.click_recorder_tab = Recorder()
+        self.overlay_tab = overlay
+        self.autoclicker_tab = tables
+        self.click_recorder_tab = recorder
         self.click_recorder_tab.set_main_window(self)
-        self.click_recorder_tab.start_recording(HardWorkingBruh)
+        self.click_recorder_tab.start_recording()
+
 
         self.tabs.addTab(self.autoclicker_tab, "Autoclicker")
         self.tabs.addTab(self.click_recorder_tab, "Recorder")
@@ -359,5 +335,6 @@ class MainWindow(QMainWindow):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+
     window = MainWindow()
     sys.exit(app.exec_())

@@ -118,8 +118,6 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QPushButton, QVBoxLayout
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt, QSize
 
-
-
 #___  ____ _ _ _ ____ ____    ___  _    ____ _  _ ___
 #|__] |  | | | | |___ |__/    |__] |    |__| |\ |  |
 #|    |__| |_|_| |___ |  \    |    |___ |  | | \|  |
@@ -135,8 +133,11 @@ from PyQt5.QtCore import Qt, QSize
 
 
 class layer0(QMainWindow):
-    def __init__(self):
+    def __init__(self, logger):
         super().__init__()
+
+        #Error handler 
+        self.logger = logger
 
         self.setWindowTitle("Overlay")
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
@@ -148,7 +149,8 @@ class layer0(QMainWindow):
         self.config_popup = None
 
         # Create and connect widgets
-        self.browse_button = QPushButton("BROWSE")
+
+        self.browse_button = QPushButton("Choose your image")
         self.browse_button.clicked.connect(self.upload_image)
 
         self.config_button = QPushButton("Configure")
@@ -223,8 +225,11 @@ class layer0(QMainWindow):
                                                       
 
 class layer1(QWidget):
-    def __init__(self, pixmap, original_pixmap):
+    def __init__(self, pixmap, original_pixmap,logger):
         super().__init__()
+
+        #Error handler 
+        self.logger = logger
 
         self.setWindowTitle("Settings")
         self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint | Qt.WindowTransparentForInput)
@@ -295,8 +300,11 @@ class layer1(QWidget):
 
 
 class layer_config(QDialog):
-    def __init__(self, image_window):
+    def __init__(self, image_window,logger):
         super().__init__()
+
+        #Error handler 
+        self.logger = logger
 
         self.setWindowTitle("Configure Image")
         self.image_window = image_window

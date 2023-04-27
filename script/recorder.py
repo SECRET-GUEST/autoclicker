@@ -125,7 +125,6 @@ from PyQt5 import QtGui
 
 from pynput import mouse, keyboard
 
-
 #___  ____ _ _ _ ____ ____    ___  _    ____ _  _ ___
 #|__] |  | | | | |___ |__/    |__] |    |__| |\ |  |
 #|    |__| |_|_| |___ |  \    |    |___ |  | | \|  |
@@ -136,8 +135,11 @@ from pynput import mouse, keyboard
 
 #Our importable class containing functions to avoid working too hard
 class HardWorkingBruh(QWidget):
-    def __init__(self):
+    def __init__(self, logger):
         super().__init__()
+
+        #Error handler 
+        self.logger = logger
 
         #List to store mouse events
         self.mouse_events = []
@@ -453,8 +455,14 @@ class HardWorkingBruh(QWidget):
 # It sets up a listener for key press and release events, and adds an instance of HardWorkingBruh to the Recorder widget.
 
 class Recorder(QWidget):
-    def __init__(self):
+    def __init__(self,logger):
         super().__init__()
+
+        
+        #Error handler 
+        self.logger = logger
+        self.bruh = HardWorkingBruh(logger)
+        
         self.main_window = None
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
@@ -462,8 +470,9 @@ class Recorder(QWidget):
     def set_main_window(self, main_window):
         self.main_window = main_window
 
-    def start_recording(self, HardWorkingBruhClass):
-        ex = HardWorkingBruhClass()
+    def start_recording(self):
+        ex = self.bruh 
+
 
         #Function to handle key press events, if F7 is pressed during recording it will stop and opposite is also true
         def handle_key_press(key):
