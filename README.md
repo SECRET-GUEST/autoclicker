@@ -21,7 +21,7 @@
 
 ## news :
 - Tables to set the autoclicker manually
-- Upload commands for table in a text file that you can manually rewrite easyly with a text editor for example
+- Upload commands for table in a text file that you can manually rewrite easily with a text editor (here for example : https://github.com/SECRET-GUEST/ecrire )
 - Overlay that you can also find alone in here : https://github.com/SECRET-GUEST/Layer-one
 
 
@@ -42,7 +42,7 @@
 
 :black_small_square: Problem with left click turning into right click sometimes for unknown reason.
 
-:black_small_square: Overlay isn't working, but it's working here : https://github.com/SECRET-GUEST/Layer-one
+:black_small_square: Overlay isn't working
 
 :black_small_square: Troubles using `,` for new separators in keyword feature.
 
