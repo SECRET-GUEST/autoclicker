@@ -23,45 +23,88 @@ You can already run a stable version directly from the scripts.
 - Overlay that you can also find alone in here : https://github.com/SECRET-GUEST/Layer-one
 
 
-I fixed common issues,  the recorder is now stable on my equipements, but the new table system is way more powerful than it, you can save and load the script you used, they are adding each one to each others then read the command one by one.
 
-I would like to put random delay time that could be set, also make a handler for issues, and add possibility to customize easily themes and more ideas, I will relase the whole app soon so stay tuned even if I know nobody will read this ^^
+## Common issues I'm working on :
+
+:black_small_square: Use recorder + tables at same time will result to a crash. I'm working on the logger.
+
+:black_small_square: Sacrifice button will not advertise you if you're sure.
+
+:black_small_square: Window can't be resized.
+
+:black_small_square: Leaving the app during an infinite loop will let the app continue it's process until you kill it by pressing `F8` key .
+
+:black_small_square: No errors messages if the app crash .
+
+:black_small_square: Horrible frontend.
+
+:black_small_square: Problem with left click turning into right click sometimes for unknown reason.
+
+:black_small_square: ? section will make a crash because no README.md has been assigned to this section.
 
 
-## Actual issues I'm working on :
 
-- Use recorder + tables at same time will result to a crash. I'm working on the logger.
-- Sacrifice button will not advertise you if you're sure.
-- Window can't be resized.
-- Leaving the app during an infinite loop will let the app continue it's process until you kill it by pressing "F8" key .
-- No errors messages if the app crash .
-- Horrible frontend.
-- Problem with left click turning into right click sometimes for unknown reason
-- ? section will make a crash because no README.md has been assigned to this section.
 
 ## Usage / features : 
 
-### All app : 
+### 🎌 All apps : 
 
-- Zoom : You can use ctrl + /- or scroll to zoom the whole app
-- Windows : to find other features
+:checkered_flag: Zoom : You can use ctrl + /- or scroll to zoom the whole app
 
-### Tables :
+:checkered_flag: Windows : to find other features
 
-- Save & load : You can save and load script in file `.txt` that you can easily modify with a text editor.
-- Delay : Set an amount of time to play the actions
 
-- Click, double click, move : You have to position with the position button or set it manually . Move = move the mouse without clicking
-- Press : Press the choosen key, then in text you can set also how much you would like to press that key.
-- Combo : Make a combo until 5 keys pressed in the same time.
-- Scroll : Positive value for upside, and downside for the negative one. You can also record the frame (don't forget to stop it).
-- Text : Type a text without a limit of characters, but you will better do to use combo to copy paste big amounts from a text file.
-- Keywords : for website like github asking you to press keys to add keywords, so you can put a list of words separate by coma (and comas only), then set another key you would like to use for new separator.
-- Wait : just wait the delay time
 
-- Time machine modulator : Upgrade or downgrade all delays
-- Reach infinity by ticking the checkbox, or simply choose the number of loop in the spinbox, you can do both but why would you do that ? :shrug:	
-- Nanosecond entropy injector : Probably the reason why you are here, this feature can set a new random amount of time between each actions 1 sec = 100 frames.
+
+### :triangular_flag_on_post: Tables :
+
+:small_red_triangle_down:	 `Save & load` : You can save and load script in file `.txt` that you can easily modify with a text editor.
+
+:small_red_triangle_down:	 `Delay` : Set an amount of time to play the actions
+
+:small_red_triangle: `Click | double click | move` : You have to position with the position button or set it manually . Move = move the mouse without clicking
+ 
+:small_red_triangle: `Press` : Press the choosen key, then in text you can set also how much you would like to press that key.
+ 
+:small_red_triangle: `Combo` : Make a combo until 5 keys pressed in the same time.
+ 
+:small_red_triangle: `Scroll` : Positive value for upside, and downside for the negative one. You can also record the frame (don't forget to stop it).
+
+:small_red_triangle: `Text` : Type a text without a limit of characters, but you will better do to use combo to copy paste big amounts from a text file.
+ 
+:small_red_triangle: `Keywords` : for website like github asking you to press keys to add keywords, so you can put a list of words separate by coma (and comas only), then set another key you would like to use for new separator.
+
+:small_red_triangle: `Wait` : just wait the delay time
+
+:small_red_triangle_down:	`Time machine modulator` : Upgrade or downgrade all delays
+
+:small_red_triangle_down:	 `Reach infinity` by ticking the checkbox, and `escape the loop` by pressing `F8` or simply choose the number of loop in the spinbox, you can do both but why would you do that ? 
+
+:small_red_triangle_down:	`Nanosecond entropy injector` : Probably the reason why you are here, this feature can set a new random amount of time between each actions 1 sec = 100 frames.
+
+
+
+
+### :black_flag: Recorder :
+
+With this feature you can record and replay the action you made without using tables, then press `F8` key to stop the replay. Don't forget to reset all events before starting to record another loop ! 
+
+
+
+
+### :white_flag: Overlay :
+
+The **overlay** can **display an image** **front of all** your windowed app or games, you can for example use the image to win a **pixel war**, this tool is also downloadable, separate from the autoclicker here : https://github.com/SECRET-GUEST/Layer-one
+
+Once the **image** is set, you can change its **opacity** or use the configure section to **resize** the **picture** , or give it a **position** .
+
+
+
+### :pirate_flag: Hidden features
+
+Click on the weird logo and see (don't worry I don't give a *F* of your datas).
+
+
 
 ## :scroll: License
 
@@ -70,7 +113,6 @@ This repository is released under the [MIT License](LICENSE). Please see the `LI
 ## :question: Support & Questions
 
 If you have any questions or need support, please feel free to open an issue or join my twitter.
-
 
 
 ```
