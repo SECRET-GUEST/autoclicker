@@ -1,4 +1,3 @@
-
 #         ████████     ██████
 #        █░░░░░░░░██_██░░░░░░█
 #       █░░░░░░░░░░░█░░░░░░░░░█
@@ -70,11 +69,11 @@
 #                                                                                                                              |                               |     |                                   |                               |     |                                   |                               |          |                                   |                               |
 #               |                             /                 \                          |                                                                              |                               |     |                                   |                               |     |                                   |                               |          |                                   |                               |
                 
-#       |                              Simple autoclicker / recorder                     |                                           |               |                                           |               |                                           |                    |                                           |
+#       |                            A cyberpunk graphical interface for                    |                                           |               |                                           |               |                                           |                    |                                           |
                 
 #                          /                      |    v    |                    \
                 
-#                    able to record and repeat all click, combos, scroll or key pressed        |                                |                                          |      |                                |                                          |      |                                |                                          |           |                                |  
+#               your app, you just have to import the class, you have an example of use downside      |                                |                                          |      |                                |                                          |      |                                |                                          |           |                                |  
 #     |                  !      |                                   |     |                                |                       |                    |                |                       |                    |                |                       |                    |                    |                                           |
 #                               |                                   |     |                  
 #                  |            |                   Anyway          !                        |                                         |                                |                       |                    |                |                       |                    |                |                       |                    |                    |
@@ -107,23 +106,15 @@
                 
 #                     |                                                |      |                                   |                               |                         |                               |                         |                               |                              |                               |
 #          |                                   |                               |                   |                                |                       |                    |          |                                |                       |                    |          |                                |                       |                    |               |                                                                |
-                
-#                 |                     |
-#  |                                |                       |                    |            |                                |                       |                    |     |                                |                       |                    |                                    |                       |                              |                                                                        |
-#          |                               |                                         !                              |                       |                    |                           |                       |                    |                           |                       |                    |                                |                       |                    |
-                
+              
 #_ _  _ ____ ___ ____ _    _    ____ ___ _ ____ _  _
 #| |\ | [__   |  |__| |    |    |__|  |  | |  | |\ |
 #| | \| ___]  |  |  | |___ |___ |  |  |  | |__| | \|
-         
-
-import sys, time
-
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QSlider, QHBoxLayout, QLabel, QTextEdit
-from PyQt5.QtCore import Qt
-from PyQt5 import QtGui
-
-from pynput import mouse, keyboard
+        
+import os
+from PyQt5.QtWidgets import QMainWindow,QApplication, QWidget, QPushButton, QFrame, QLabel, QMessageBox, QVBoxLayout, QSizeGrip,QRubberBand
+from PyQt5.QtGui import QIcon, QPainterPath, QRegion, QPainter, QPainterPath, QPalette
+from PyQt5.QtCore import Qt, QPoint, QSize,pyqtSignal
 
 #___  ____ _ _ _ ____ ____    ___  _    ____ _  _ ___
 #|__] |  | | | | |___ |__/    |__] |    |__| |\ |  |
@@ -133,379 +124,352 @@ from pynput import mouse, keyboard
 #OPENING | https://www.youtube.com/watch?v=_85LaeTCtV8 :3
 
 
-#Our importable class containing functions to avoid working too hard
-class HardWorkingBruh(QWidget):
-    def __init__(self, logger):
+
+class SizeGrip(QRubberBand):
+    def __init__(self, parent):
+        super().__init__(QRubberBand.Rectangle, parent)
+        self.setFixedSize(10, 10)
+        self.setWindowFlags(Qt.SubWindow)
+        self.setCursor(Qt.SizeFDiagCursor)
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.mousePos = event.globalPos()
+            self.parentMousePos = self.parent().mapToGlobal(QPoint())
+            event.accept()
+
+    def mouseMoveEvent(self, event):
+        if event.buttons() == Qt.LeftButton:
+            diff = event.globalPos() - self.mousePos
+            newWidth = max(self.parent().minimumWidth(), self.parent().width() + diff.x())
+            newHeight = max(self.parent().minimumHeight(), self.parent().height() + diff.y())
+            newSize = QSize(newWidth, newHeight)
+            self.parent().resize(newSize)
+            event.accept()
+
+
+
+
+
+#_  _ ____ _  _ ____    ____ ___  ___     _ _ _ _ ___ _  _    ___ _ ___ _    ____ 
+#|\/| |  | |  | |___    |__| |__] |__]    | | | |  |  |__|     |  |  |  |    |___ 
+#|  | |__|  \/  |___    |  | |    |       |_|_| |  |  |  |     |  |  |  |___ |___ 
+                                                                                 
+
+class cypunkTitle1(QWidget):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.setMouseTracking(True)  # enable tracking of mouse movements
+        self.mouse_pressed = False  # initialize flag to check if mouse button is pressed
+        self.mouse_position = QPoint()  # initialize mouse position variable
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:  # check if left mouse button is pressed
+            self.mouse_pressed = True  # set flag to indicate left button is pressed
+            self.mouse_position = event.globalPos() - self.parent().pos()  # calculate mouse position relative to parent widget
+            event.accept()
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton:  # check if left mouse button is released
+            self.mouse_pressed = False  # set flag to indicate left button is released
+            event.accept()
+
+    def mouseMoveEvent(self, event):
+        if self.mouse_pressed:  # check if left mouse button is pressed
+            self.parent().move(event.globalPos() - self.mouse_position)  # move parent widget according to mouse position
+            event.accept()
+
+
+
+#_  _ ____ _ _  _    _ _ _ _ _  _ ___  ____ _ _ _ 
+#|\/| |__| | |\ |    | | | | |\ | |  \ |  | | | | 
+#|  | |  | | | \|    |_|_| | | \| |__/ |__| |_|_| 
+                                                 
+
+
+class cypunk1Window(QMainWindow):
+    resized = pyqtSignal()  # Ajoutez cette ligne
+
+    def __init__(self, title, window_size, btn_minimize=None, btn_show=None, stylesheet_path=None):
         super().__init__()
-
-        #Error handler 
-        self.logger = logger
-
-        #List to store mouse events
-        self.mouse_events = []
-
-        #List to store keyboard events
-        self.keyboard_events = []
-
-        self.f_key_handled = False
-
-        #Dictionary to store the state of modifier keys
-        self.modifier_keys = {
-            'ctrl_left': False,
-            'ctrl_right': False,
-            'alt_left': False,
-            'alt_right': False,
-            'shift_left': False,
-            'shift_right': False,
-        }
-
-        #Variables to store keyboard and mouse listeners
-        self.keyboard_listener = None
-        self.mouse_listener = None
-
-        #Recording state of mouse events (True if recording, False otherwise)
-        self.recording = False
-
-        #Repeating state of mouse events (True if repeating, False otherwise)
-        self.repeating = False
-        
-        #On finit par lancer l'interface utilisateur
-        self.GUI()
+        self.mwgui(title, window_size, btn_minimize, btn_show, stylesheet_path)
 
 
 
+    # Graphical user interface of main window
+    def mwgui(self, title, window_size, btn_minimize, btn_show, stylesheet_path):
+        self.title = title  # initialize window title in a variable that can be used in another page
+        self.btn_minimize = btn_minimize  
+        self.btn_show = btn_show  
+
+        # Set Layout for the title (you can add self.vlay_cypunk1.addWidget(YOUR_WIDGET) directly in other pages  )
+        self.init_Vlayout()
 
 
 
-#____ _  _ ___ ____ ____ _    _ ____ _  _ ____ ____ 
-#|__| |  |  |  |  | |    |    | |    |_/  |___ |__/ 
-#|  | |__|  |  |__| |___ |___ | |___ | \_ |___ |  \ 
+        #Load stylesheet if available
+        if stylesheet_path:
+            with open(stylesheet_path, "r") as file:
+                stylesheet = file.read()
+                self.setStyleSheet(stylesheet)  # set stylesheet for the window
+
+
+        self.minimize_icon = QIcon(btn_minimize)
+        self.show_icon = QIcon(btn_show)
+
+        width, height = map(int, window_size.split("x"))  # parse window size from string
+
+
+
+        self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)  # set window flags
+        self.setAttribute(Qt.WA_NoSystemBackground, True)  # set widget attribute for no system background
+        self.setAttribute(Qt.WA_TranslucentBackground, True)  # set widget attribute for translucent background
+
+
+
+        self.central_widget = QFrame()  # create a central widget to let set the rgba(transparency) in your other page
+        self.setMinimumSize(width, height)  # set minimum size for the window (updated line)
+        self.setCentralWidget(self.central_widget)
+
+
+
+
+        # create title bar widget
+        self.title_bar = cypunkTitle1(self)  
+        self.title_bar.setGeometry(0, 0, self.width(), 30)  # set geometry for title bar widget
+
+        self.hide_button = QPushButton(self.title_bar)  # create minimize button
+
+        #Use this to minimize the window with an image
+        if btn_minimize:
+            self.hide_button.setIcon(QIcon(btn_minimize)) 
+
+
+        self.hide_button.setGeometry(0, 5, 30, 20) 
+        self.hide_button.setStyleSheet("background-color: transparent;") 
+        self.hide_button.clicked.connect(self.toggle_window) 
+
+        self.title_label = QLabel(title, self.title_bar, objectName="title")  # create title label you can reuse in css
+        self.title_label.setGeometry(28, 5, 200, 20)  
+        self.title_label.setStyleSheet("background-color: transparent; padding-right: 20px;")
+
+
+
+
+        # The close button inside the window
+        self.close_button = QPushButton(self.title_bar)  # create close button
+        self.close_button.setGeometry(width - 30 - 8, 15, 20, 20)  # Place it 8 px before the hexagonal mask
+        self.close_button.setStyleSheet("QPushButton {"
+                                         "background-color: red;"
+                                         "border: none;"
+                                         "width: 20px;"
+                                         "height: 10px;"
+                                         "}"
+                                         "QPushButton:hover {"
+                                         "background-color: darkred;"
+                                         "}")
+        self.close_button.clicked.connect(self.close_application)
+
+
+        # The close button inside the window
+        self.micromize_button = QPushButton(self.title_bar)  # create close button
+        self.micromize_button.setGeometry(width - 60 - 8, 5, 20, 20)  # Place it 8 px before the hexagonal mask
+        self.micromize_button.setStyleSheet("QPushButton {"
+                                         "background-color: orange;"
+                                         "border: none;"
+                                         "width: 20px;"
+                                         "height: 10px;"
+                                         "}"
+                                         "QPushButton:hover {"
+                                         "background-color: darkorange;"
+                                         "}")
+        self.micromize_button.clicked.connect(self.showMinimized)
+
+
+
+
+        # Element to resize window by dragging the right corner
+        self.resizeGrip = SizeGrip(self)
+        self.resizeGrip.setGeometry(self.width() - 10, self.height() - 10, 10, 10)
+        self.resizeGrip.lower()
+
+        # Add size grip
+        self.size_grip = QSizeGrip(self.central_widget)
+        self.size_grip.setGeometry(self.width() - 20, self.height() - 20, 20, 20)
+
+        # Ajoutez ces lignes à la fin de la méthode mwgui
+        self.resized.connect(self.update_central_widget_geometry)
+        self.update_central_widget_geometry()
+
+
+
+
+
+
+
+    def update_central_widget_geometry(self):
+        self.central_widget.setGeometry(0, 0, self.width(), self.height())
+
+
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.resized.emit()  # Ajoutez cette ligne
+
+        self.resizeGrip.setGeometry(self.width() - 10, self.height() - 10, 10, 10)
+        self.size_grip.setGeometry(self.width() - 20, self.height() - 20, 20, 20)
+        self.set_hexagon_shape()
+
+        # move the close button widget with the window
+        new_pos = self.mapToGlobal(QPoint(self.width() - 30, 5))
+        # Adjust the position of the close button
+        self.micromize_button.move(self.width() - 60 - 8, 5)
+        self.close_button.move(self.width() - 30 - 8, 5)
+        self.title_bar.setGeometry(0, 0, self.width(), 30)  # set geometry for title bar widget
+        self.central_widget.setGeometry(0, 0, self.width(), self.height())  # update central widget geometry
+        self.set_hexagon_shape()  # update hexagon shape
+        self.frameGeometry().setWidth(self.width())  # update frame geometry width
+        self.frameGeometry().setHeight(self.height())  # update frame geometry height
+
+
+
+
+
+
+
+
+    def init_Vlayout(self):
+        # Apply a vertical layout to the central widget
+        self.vlay_cypunk1 = QVBoxLayout(self.centralWidget())
+        self.vlay_cypunk1.setContentsMargins(0, 30, 0, 0)
+
+
+    def Vlayout(self, widget):
+        # Add the given widget to the layout
+        self.vlay_cypunk1.addWidget(widget)
+
+
+    def moveEvent(self, event):
+        super().moveEvent(event)
+        new_pos = self.mapToGlobal(QPoint(self.width() - 10, 0))
+
+
+
+
+
+    def set_hexagon_shape(self):
+        # create QPainterPath for a hexagon shape
+        path = QPainterPath()
+        path.moveTo(30, 0)
+        path.lineTo(self.width() - 20, 0)
+        path.lineTo(self.width(), 20)
+        path.lineTo(self.width(), self.height() - 0)
+        path.lineTo(self.width() - 20, self.height())
+        path.lineTo(20, self.height())
+        path.lineTo(0, self.height() - 20)
+        path.lineTo(0, 0)
+        path.closeSubpath()
+
+        # create QRegion from hexagon shape and set it as the mask for the window
+        region = QRegion(path.toFillPolygon().toPolygon())
+        self.setMask(region)
+
+
+
+
+    def toggle_window(self):
+        if self.central_widget.isVisible():  # check if central widget is visible
+            # hide central widget, title label, and close button widget
+            self.central_widget.hide()
+            self.title_label.hide()
+            self.close_button.hide()
+            self.micromize_button.hide()
+            self.hide_button.setIcon(self.show_icon)  # set icon for minimize button to show icon
+
+        else:
+            # show central widget, title label, and close button widget
+            self.close_button.show()
+            self.central_widget.show()
+            self.title_label.show()
+            self.micromize_button.show()
+            self.hide_button.setIcon(self.minimize_icon)  # set icon for minimize button to minimize icon
+
+
+
+
+
+    def close_application(self):
+        os._exit(0)  # close EVERYTHING
+
+
+
+
+#_  _ ____ ____ ____ ____ ____ ____    ___  ____ _  _ 
+#|\/| |___ [__  [__  |__| | __ |___    |__] |  |  \/  
+#|  | |___ ___] ___] |  | |__] |___    |__] |__| _/\_ 
+                              
+                                                     
+class Cypunk1MessageBox(QMessageBox):
+    def __init__(self,stylesheet_path=None, *args, **kwargs): # pass stylesheet as argument
+        super().__init__(*args, **kwargs)
+
+        self.mbGui(stylesheet_path)  
+
+
+    def mbGui(self,stylesheet_path):
+        #Load stylesheet if available
+        if stylesheet_path:
+            with open(stylesheet_path, "r") as file:
+                stylesheet = file.read()
+                self.setStyleSheet(stylesheet)  
      
-                                           
-#Now we define our main functions:
-
-#Function to record clicks
-    def on_click(self, x, y, button, pressed):
-        #If recording is not active, do nothing
-        if not self.recording:
-            return
-
-        #Creates a tuple with information about the click event and adds it to the list of events
-        event = ('click', time.time(), x, y, button, pressed)
-        self.mouse_events.append(event)
-        self.log_message(str(event))
-
-
-
-#Function to record scrolling
-    def on_scroll(self, x, y, dx, dy):
-        #If recording is not active, do nothing
-        if not self.recording:
-            return
-
-        event = ('scroll', time.time(), x, y, dx, dy)
-        self.mouse_events.append(event)
-        self.log_message(str(event))
-
-
-
-#Function for displaying information at the top of the list (with 0)
-    def log_message(self, message):
-        self.on_air.moveCursor(QtGui.QTextCursor.Start)
-        self.on_air.insertPlainText(message + "\n")
-        self.on_air.moveCursor(QtGui.QTextCursor.Start)
-
-
-
-    # Function to record keyboard events
-    def on_key_press(self, key):
-        if not self.recording:
-            return
-
-        # Prevent recording certain keys and record combinations with ctrl, alt, ...
-        if key not in {keyboard.Key.f1, keyboard.Key.f2, keyboard.Key.f3, keyboard.Key.f4, keyboard.Key.f6, keyboard.Key.f9, keyboard.Key.f10, keyboard.Key.f11}:
-            if key in {keyboard.Key.ctrl_l, keyboard.Key.ctrl_r, keyboard.Key.alt_l, keyboard.Key.alt_r, keyboard.Key.shift_l, keyboard.Key.shift_r}:
-
-                # Convert the 'key' object to a string, then split the string using "." to separate, get the 2nd element [1]
-                # For example: if the string is 'Key.ctrl + l', 'ctrl_l' will be retrieved.
-                # Then, update the 'modifier_keys' dictionary by assigning the value True to the corresponding key.
-                # This means that the 'modifier' key is currently pressed.
-                self.modifier_keys[str(key).split('.')[1]] = True
-
-            # Create a tuple representing the key press event with:
-            # key: the key
-            # time.time(): the timestamp of the event in seconds
-            # 2nd key: the pressed key
-            # True: pressed (False if released)
-            # self.modifier_keys.copy(): a copy of the 'modifier_keys' dictionary representing the state of the modifiers (ctrl, ...)
-            event = ('key', time.time(), key, True, self.modifier_keys.copy())
-
-            # Add to the 'keyboard_events' list
-            self.keyboard_events.append(event)
-            self.log_message(str(event))
-
-
-
-
-#Function to handle key release events
-    def on_key_release(self, key):
-        if not self.recording:
-            return
-
-        if key not in {keyboard.Key.f1, keyboard.Key.f2, keyboard.Key.f3, keyboard.Key.f4, keyboard.Key.f6, keyboard.Key.f9, keyboard.Key.f10, keyboard.Key.f11}:
-            if key in {keyboard.Key.ctrl_l, keyboard.Key.ctrl_r, keyboard.Key.alt_l, keyboard.Key.alt_r, keyboard.Key.shift_l, keyboard.Key.shift_r}:
-                self.modifier_keys[str(key).split('.')[1]] = False
-
-            event = ('key', time.time(), key, False, self.modifier_keys.copy())
-            self.keyboard_events.append(event)
-            self.log_message(str(event))
-
-
-#Function to start recording events
-    def start_recording(self):
-        self.log_message("Start recording" )
-        self.recording = True
-        self.mouse_listener = mouse.Listener(on_click=self.on_click, on_scroll=self.on_scroll)
-        self.mouse_listener.start()
-
-
-#Function to stop recording events
-    def stop_recording(self) :
-        self.log_message( "Stop recording")
-        self.recording = False
-
-        if self.mouse_listener:
-            self.mouse_listener.stop()
-
-
-#Function to stop the event repetition loop
-    def stop_loop(self):
-        self.log_message("Stop loop")
-        self.repeating = False
-
-
-#Resets mouse events
-    def reset_events(self):
-        self.log_message("Reset events")
-        self.mouse_events = []
-        self.keyboard_events = []
-
-
-
-
-# Function to replay recorded events
-    def play_events(self):
-
-        try:
-            self.log_message("Read events")
-
-            if not self.mouse_events and not self.keyboard_events:
-                return
-
-            self.repeating = True
-
-            # Get the slider value and convert it to delay (in milliseconds)
-            slider_value = self.speeder.value()
-            delay = (100 - slider_value) / 100.0
-
-            # Sort the events by their timestamp
-            sorted_events = sorted(self.mouse_events + self.keyboard_events, key=lambda x: x[1])
-
-            # Loop while the 'repeating' variable is True
-            while self.repeating:
-                # Iterate over all recorded mouse and keyboard events
-                for event in sorted_events:
-                    # If 'repeating' is set to False, break the loop
-                    if not self.repeating:
-                        break
-
-                    # If the event is a mouse click
-                    if event[0] == 'click':
-                        _, _, x, y, button, pressed = event
-
-                        # Move the cursor to the position (x, y)
-                        mouse.Controller().position = (x, y)
-                        # If the button is pressed, press the mouse button
-                        if pressed:
-                            mouse.Controller().press(button)
-                        # Otherwise, release the mouse button
-                        else:
-                            mouse.Controller().release(button)
-
-                    # If the event is a scroll event
-                    elif event[0] == 'scroll' :
-                        _, _, x, y, dx, dy = event
-
-                        mouse.Controller().position = (x, y)
-                        mouse.Controller().scroll(dx, dy)
-
-                    # If the event is a keyboard event
-                    elif event[0] == 'key':
-                        _, _, key, pressed, modifiers = event
-
-                        # If the key is pressed, press the modifier keys and the main key
-                        if pressed:
-                            for modifier, is_pressed in modifiers.items():
-                                if is_pressed:
-                                    keyboard.Controller().press(getattr(keyboard.Key, modifier))
-
-                            keyboard.Controller().press(key)
-
-                        # Otherwise, release the modifier keys and the main key
-                        else:
-                            keyboard.Controller().release(key)
-
-                            for modifier, is_pressed in modifiers.items():
-                                if is_pressed:
-                                    keyboard.Controller().release(getattr(keyboard.Key, modifier))
-
-                    # Add a delay between events based on the slider value
-                    time.sleep(delay)
-
-        except Exception as e:
-            print(f"Error : {e}")
-
-        finally:
-            # Release all keys and mouse buttons
-            if key is not None:
-                keyboard.Controller().release(key)
-
-            # You can add here the release of mouse buttons
-            mouse.Controller().release(mouse.Button.left)
-            mouse.Controller().release(mouse.Button.right)
-            mouse.Controller().release(mouse.Button.middle)
-
-            return
-
-
-
-#____ ____ ____ ___  _  _ _ ____ ____ _       _  _ ____ ____ ____    _ _  _ ___ ____ ____ ____ ____ ____ ____ 
-#| __ |__/ |__| |__] |__| | |    |__| |       |  | [__  |___ |__/    | |\ |  |  |___ |__/ |___ |__| |    |___ 
-#|__] |  \ |  | |    |  | | |___ |  | |___    |__| ___] |___ |  \    | | \|  |  |___ |  \ |    |  | |___ |___ 
+     
+        self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)  # set window flags
+        self.setAttribute(Qt.WA_NoSystemBackground, True)  # set widget attribute for no system background
+        self.setAttribute(Qt.WA_TranslucentBackground, True)  # set widget attribute for translucent background
    
 
-    def GUI(self):
-        self.setWindowTitle('Hard working Bruh')
 
-        # UI buttons
-        btn_start = QPushButton('START RECORDING (F7)', self)
-        btn_start.clicked.connect(self.start_recording)
+    # This function is similar to the Hexagon function you saw before, but
+    # here you can also assign and use colours for the message box
+    def paintEvent(self, event):
+        # Create a QPainter object to paint on the widget
+        painter = QPainter(self)
 
-        btn_stop = QPushButton('STOP RECORDING (F7)', self)
-        btn_stop.clicked.connect(self.stop_recording)
+        # Set the brush color to the background color of the widget
+        painter.setBrush(self.palette().brush(QPalette.Background))
 
-        btn_play = QPushButton('PLAY', self)
-        btn_play.clicked.connect(self.play_events)
+        # Create a QPainterPath object to define the shape of the widget
+        path = QPainterPath()
+        path.moveTo(30, 0)
+        path.lineTo(self.width() - 20, 0)
+        path.lineTo(self.width(), 20)
+        path.lineTo(self.width(), self.height() - 0)
+        path.lineTo(self.width() - 20, self.height())
+        path.lineTo(20, self.height())
+        path.lineTo(0, self.height() - 20)
+        path.lineTo(0, 0)
 
-        btn_stop_loop = QPushButton('STOP LOOP (F8)', self)
-        btn_stop_loop.clicked.connect(self.stop_loop)
+        # Close the subpath to complete the shape
+        path.closeSubpath()
 
-        btn_reset = QPushButton('RESET ALL EVENTS', self)
-        btn_reset.clicked.connect(self.reset_events)
-
-        # Create a horizontal slider with a range from 0 to 100
-        self.speeder = QSlider(Qt.Horizontal)
-        self.speeder.setMinimum(0)
-        self.speeder.setMaximum(100)
-        self.speeder.setValue(50)
-
-        # Create labels for the slider
-        lab_speeder = QLabel('SPEED')
-        lab_min = QLabel('-')
-        lab_max = QLabel('+')
-
-        # Display the label defining the actions
-        self.on_air = QTextEdit(self,objectName="TextEdit")
-        self.on_air.setPlainText("\n\nTUTORIAL:\n\nZoom (ctrl + scroll or +/-) works throughout the application\n\nPressed buttons and software actions will be displayed here\n\nYou can increase the repetition rate by adjusting the click speed scrollbar\n\nAs it is not entirely stable, you may encounter errors, but nothing critical. Just restart the computer if it really goes haywire.")
-        self.on_air.setReadOnly(True)
-
-        # Create a horizontal layout for the slider and labels
-        h_lay_ac = QHBoxLayout()
-        h_lay_ac.addWidget(lab_min)
-        h_lay_ac.addWidget(self.speeder)
-        h_lay_ac.addWidget(lab_max)
-
-        # Create a vertical layout for the buttons, slider and label
-        v_lay_ac = QVBoxLayout()
-        v_lay_ac.addWidget(btn_start)
-        v_lay_ac.addWidget(btn_stop)
-        v_lay_ac.addWidget(btn_play)
-        v_lay_ac.addWidget(btn_stop_loop)
-        v_lay_ac.addWidget(btn_reset)
-        v_lay_ac.addWidget(lab_speeder)
-        v_lay_ac.addLayout(h_lay_ac)
-        v_lay_ac.addWidget(self.on_air)
-
-        # Apply the vertical layout
-        self.setLayout(v_lay_ac)
-
-        self.show()
+        # Draw the shape using the QPainter object
+        painter.drawPath(path)
 
 
 
 
-#____ ____ ____ _  _ ____ ___    _    ____ _  _ _  _ ____ _  _
-#|__/ |  | |    |_/  |___  |     |    |__| |  | |\ | |    |__|
-#|  \ |__| |___ | \_ |___  |     |___ |  | |__| | \| |___ |  |
-                
-#ENDING | https://www.youtube.com/watch?v=CgZVrvQZB6U&ab_channel=SECRETGUEST :3
+#Functions to move the window by holding left mouse button
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.dragPosition = event.globalPos() - self.frameGeometry().topLeft()
+            event.accept()
+
+    def mouseMoveEvent(self, event):
+        if event.buttons() == Qt.LeftButton:
+            self.move(event.globalPos() - self.dragPosition)
+            event.accept()
 
 
-#This function defines a class Recorder that allows recording and playing back key presses using the HardWorkingBruh class. 
-# It sets up a listener for key press and release events, and adds an instance of HardWorkingBruh to the Recorder widget.
 
-class Recorder(QWidget):
-    def __init__(self,logger):
-        super().__init__()
-
-        
-        #Error handler 
-        self.logger = logger
-        self.bruh = HardWorkingBruh(logger)
-        
-        self.main_window = None
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
-
-    def set_main_window(self, main_window):
-        self.main_window = main_window
-
-    def start_recording(self):
-        ex = self.bruh 
-
-
-        #Function to handle key press events, if F7 is pressed during recording it will stop and opposite is also true
-        def handle_key_press(key):
-            if key == keyboard.Key.f7:
-                if ex.recording:
-                    ex.stop_recording()
-                else:
-                    ex.start_recording()
-
-            #If any other key is pressed, call the 'on_key_press' method of the 'ex' instance of HardWorkingBruh
-            else:
-                ex.on_key_press(key)
-
-        #Function to handle key release events
-        def handle_key_release(key):
-            if key == keyboard.Key.f8:
-                ex.stop_loop()
-            else:
-                ex.on_key_release(key)
-
-        #Put the keyboard on listen to intercept key press and release events
-        keyboard_listener = keyboard.Listener(on_press=handle_key_press, on_release=handle_key_release)
-
-        #Start listening
-        keyboard_listener.start()
-
-        #Add the instance of HardWorkingBruh to the Recorder widget
-        self.layout.addWidget(ex)
-
-
-#Finally, we start the event loop
-# if __name__ == '__main__':
-#     app = QApplication(sys.argv)
-#     Recorder()
-#     sys.exit(app.exec_())
-# 

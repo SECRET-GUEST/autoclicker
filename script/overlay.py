@@ -177,14 +177,15 @@ class layer0(QMainWindow):
     def upload_image(self):
         if not self.image_window:
             file_name, _ = QFileDialog.getOpenFileName(self, "Open Image", "", "Images (*.png *.xpm *.jpg *.bmp)")
-
+    
             if file_name:
                 pixmap = QPixmap(file_name)
-                self.image_window = layer1(pixmap, pixmap)
+                self.image_window = layer1(self.logger, pixmap, pixmap) # Added self.logger and pixmap as arguments
                 self.image_window.show()
                 self.config_button.show()
                 self.close_image_button.show()
                 self.opacity_slider.show()
+    
 
 # Close the image window
     def close_image(self):
@@ -215,8 +216,9 @@ class layer0(QMainWindow):
 # Show configuration popup for the image window
     def show_config_popup(self):
         if not self.config_popup:
-            self.config_popup = layer_config(self.image_window) 
-        self.config_popup.show()
+            self.config_popup = layer_config(self.logger, self.image_window) 
+        self.config_popup.show()    
+
 
 
 # _ _  _ ____ ____ ____    _ _ _ _ _  _ ___  ____ _ _ _ 
@@ -225,7 +227,7 @@ class layer0(QMainWindow):
                                                       
 
 class layer1(QWidget):
-    def __init__(self, pixmap, original_pixmap,logger):
+    def __init__(self,logger, pixmap, original_pixmap):
         super().__init__()
 
         #Error handler 
@@ -300,7 +302,7 @@ class layer1(QWidget):
 
 
 class layer_config(QDialog):
-    def __init__(self, image_window,logger):
+    def __init__(self,logger, image_window):
         super().__init__()
 
         #Error handler 
@@ -366,9 +368,9 @@ class layer_config(QDialog):
 #ENDING | https://www.youtube.com/watch?v=CgZVrvQZB6U&ab_channel=SECRETGUEST :3
 
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    main_window = layer0()
-    main_window.show()
-    sys.exit(app.exec_())
+# if __name__ == "__main__":
+#     app = QApplication(sys.argv)
+#     main_window = layer0()
+#     main_window.show()
+#     sys.exit(app.exec_())
 

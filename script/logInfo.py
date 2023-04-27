@@ -114,8 +114,10 @@
    
 
 import logging
-from PyQt5.QtWidgets import QMessageBox
-from msgBox import FreeWill, tripleChoice
+from PyQt5.QtWidgets import QMessageBox,QDialog
+from msgBox import FreeWill, tripleChoice, ThemeSelector
+
+import configparser
 
 class logz(logging.Logger):
     def __init__(self, name, level=logging.NOTSET):
@@ -166,3 +168,39 @@ class logz(logging.Logger):
         error_box.setText(message)
         error_box.exec_()
 
+    def show_theme_selector(self, parent):
+        theme_selector = ThemeSelector(parent)
+        result = theme_selector.exec_()
+        if result == QDialog.Accepted:
+            selected_theme = theme_selector.button_group.checkedId()
+            return selected_theme
+        return None
+
+
+
+
+    def load_config(self):
+        config = configparser.ConfigParser()
+        config.read('config.ini')
+
+        if 'Settings' not in config.sections():
+            config.add_section('Settings')
+
+        if 'last_theme' not in config['Settings']:
+            config.set('Settings', 'last_theme', '1')
+            with open('config.ini', 'w') as configfile:
+                config.write(configfile)
+
+        return config.getint('Settings', 'last_theme')
+
+
+    def save_config(self, theme):
+        config = configparser.ConfigParser()
+        config.read('config.ini')   
+
+        if 'Settings' not in config.sections():
+            config.add_section('Settings')  
+
+        config.set('Settings', 'last_theme', str(theme))
+        with open('config.ini', 'w') as configfile:
+            config.write(configfile)    

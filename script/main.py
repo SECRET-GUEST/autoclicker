@@ -113,15 +113,18 @@
          
 
 import sys,os
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget, QVBoxLayout, QAction,  QMenu, QDialog, QLabel, QVBoxLayout,QTextEdit
+
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget, QVBoxLayout, QAction,  QMenu, QDialog, QLabel, QVBoxLayout,QTextEdit
 
 from recorder import Recorder
-
 from tables import DarthBMO
 from overlay import layer0 as Overlay
 from zoom_handler import enable_zoom
 from logInfo import logz
+
+from cypunk1 import cypunk1Window
 
 #___  ____ _ _ _ ____ ____    ___  _    ____ _  _ ___
 #|__] |  | | | | |___ |__/    |__] |    |__| |\ |  |
@@ -143,30 +146,73 @@ def ressource_path(relative_path):
 #Example : /icon/lol.png  BECOME  ressource_path(/icon/lol.png)
 
 
+# Faster to integrate with this window's inception method 
+# TODO : rework.
+class windowCeption(cypunk1Window):
+    def __init__(self):
+        super().__init__(
+            title="Lemme do it 4 U 🥺",
+            window_size="758x400",
+            btn_minimize="ico/open.png",
+            btn_show="ico/hide.png",
+            stylesheet_path=None
+        )
+
+        Vlay = QVBoxLayout()
+        main_page = MainWindow(parent=self)
+
+        Vlay.addSpacing(28)
+        Vlay.addWidget(main_page)
+
+        self.central_widget.setLayout(Vlay)
+
+    def apply_stylesheet(self, stylesheet_path):
+        with open(stylesheet_path, "r") as file:
+            stylesheet = file.read()
+            self.setStyleSheet(stylesheet)
 
 
 
 class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
 
-        #I'm using style sheet in txt because python doesn't read well CSS and JSON 
-        #is harder to use and not that much optimised
-        stylesheet_path = ressource_path("style/style1.txt")
+        # Store windowCeption instance
+        self.window_ception = parent
+
+        # First, configure the error handler
+        self.logger = logz.configLogs("Autoclicker", "ERRORS.log", use_qt_dialogs=True)
+        self.tables = DarthBMO(self.logger)
+        self.recorder = Recorder(self.logger)
+        self.overlay = Overlay(self.logger)
+
+        # Load last selected theme from config file
+        last_theme = self.logger.load_config()
+
+        # I'm using style sheet in txt because python doesn't read well CSS and JSON 
+        # is harder to use and not that much optimized
+        stylesheet_path = ressource_path(f"style/style{last_theme}.txt")
         stylesheet = self.load_stylesheet(stylesheet_path)
-        self.setStyleSheet(stylesheet)
+        self.parent().setStyleSheet(stylesheet)
 
         # Enable zooming for this window
         enable_zoom(self)
-
         self.GUI()
 
-
-    #Function to load our style sheet
+    # Function to load our style sheet
     def load_stylesheet(self, file_path):
         with open(file_path, 'r') as file:
             stylesheet = file.read()
         return stylesheet
+
+    def show_theme_selector_dialog(self):
+        selected_theme = self.logger.show_theme_selector(self)
+        if selected_theme is not None:
+            # Save selected theme in the config file
+            self.logger.save_config(selected_theme)
+
+            stylesheet_path = ressource_path(f"style/style{selected_theme}.txt")
+            self.window_ception.apply_stylesheet(stylesheet_path)
 
 
 
@@ -222,6 +268,7 @@ class MainWindow(QMainWindow):
         # Display the plain text content in a QDialog
         dialog = QDialog(self)
         dialog.setWindowTitle("Help")
+        dialog.setWindowFlags(dialog.windowFlags() & ~Qt.WindowContextHelpButtonHint)
         text_view = QTextEdit(dialog)
         text_view.setPlainText(md_content)
         text_view.setReadOnly(True)
@@ -236,12 +283,6 @@ class MainWindow(QMainWindow):
    
 
     def GUI(self):
-        # First, configure the error handler
-        logger = logz.configLogs("Autoclicker", "ERRORS.log", use_qt_dialogs=True)
-        tables = DarthBMO(logger)
-        recorder = Recorder(logger)
-        overlay = Overlay(logger)
-
         # Now the GUI
         self.setWindowTitle(" Lemme do it 4 U 🥺")
         self.setWindowIcon(QIcon(ressource_path("ico/autoclicker.png")))
@@ -259,13 +300,13 @@ class MainWindow(QMainWindow):
         self.click_recorder_check = QAction("Click Recorder", self, checkable=True)
         self.overlay_check = QAction("Overlay", self, checkable=True)
 
-#TODO:
-#        #Menu Display
-#        display_menu = QMenu("Display", self)
-#        menu_bar.addMenu(display_menu)
-#
-#        self.themes_action = QAction("Themes", self)
-#        self.themes_action.triggered.connect(ThemeSelector)
+
+        #Menu Display
+        display_menu = QMenu("Display", self)
+        menu_bar.addMenu(display_menu)
+
+        self.themes_action = QAction("Themes", self)
+        self.themes_action.triggered.connect(self.show_theme_selector_dialog)
 
         #Menu Help
         help_menu = QMenu("Help", self)
@@ -282,9 +323,9 @@ class MainWindow(QMainWindow):
         self.tabs = QTabWidget()
 
         #Add and configure tabs
-        self.overlay_tab = overlay
-        self.autoclicker_tab = tables
-        self.click_recorder_tab = recorder
+        self.overlay_tab = self.overlay
+        self.autoclicker_tab = self.tables
+        self.click_recorder_tab = self.recorder
         self.click_recorder_tab.set_main_window(self)
         self.click_recorder_tab.start_recording()
 
@@ -310,7 +351,7 @@ class MainWindow(QMainWindow):
         windows_menu.addAction(self.click_recorder_check)
         windows_menu.addAction(self.overlay_check)
 
-#        display_menu.addAction(self.themes_action)
+        display_menu.addAction(self.themes_action)
         help_menu.addAction(about_action)
         help_menu.addAction(help_action)
 
@@ -336,5 +377,7 @@ class MainWindow(QMainWindow):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
-    window = MainWindow()
+    window = windowCeption()
+    window.show()
+
     sys.exit(app.exec_())

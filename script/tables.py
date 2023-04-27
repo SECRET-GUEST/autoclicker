@@ -120,7 +120,7 @@
 import sys, time,threading,uuid, random
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout,QHBoxLayout, QTableWidget, QSpacerItem,
+from PyQt5.QtWidgets import (QMainWindow, QVBoxLayout,QHBoxLayout, QTableWidget, QSpacerItem,
                             QPushButton,QCheckBox,  QWidget, QComboBox, QLabel, QLineEdit, QSpinBox, 
                             QDoubleSpinBox, QFileDialog,QSizePolicy)
 
@@ -141,10 +141,10 @@ from pynput.keyboard import Listener
 
 class DarthBMO(QMainWindow):
 
-    def __init__(self):
+    def __init__(self, logger):
         super().__init__()
 
-  
+        self.logger = logger
 
         # Initialize some variables needed to record the scroll method
         self.recording_scroll = False
@@ -956,10 +956,10 @@ class DarthBMO(QMainWindow):
 
 
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-
-    mainWin = DarthBMO()
-    mainWin.show()
-
-    sys.exit(app.exec_())
+# __name__ == "__main__":
+#    app = QApplication(sys.argv)
+#
+#    mainWin = DarthBMO()
+#    mainWin.show()
+#
+#    sys.exit(app.exec_())

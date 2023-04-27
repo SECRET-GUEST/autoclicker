@@ -1,4 +1,7 @@
-from PyQt5.QtWidgets import QMessageBox, QPushButton
+from PyQt5.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLabel, QRadioButton, QPushButton, QButtonGroup,QMessageBox
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt
+
 
 # simple message according a choice
 class FreeWill(QMessageBox):
@@ -48,3 +51,39 @@ class tripleChoice(QMessageBox):
             return True
 
         return False
+
+
+class ThemeSelector(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.setWindowTitle("Themes")
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
+        self.init_ui()
+
+    def init_ui(self):
+        layout = QVBoxLayout()
+    
+        self.button_group = QButtonGroup(self)
+    
+        for i in range(1, 6):
+            theme_layout = QHBoxLayout()
+    
+            image_label = QLabel(self)
+            image_label.setPixmap(QPixmap(f"ico/theme{i}.png").scaled(108, 108))
+            theme_layout.addWidget(image_label)
+    
+            radio_button = QRadioButton(self)
+            self.button_group.addButton(radio_button, i)
+            theme_layout.addWidget(radio_button)
+    
+            layout.addLayout(theme_layout)
+    
+        self.button_group.button(1).setChecked(True)
+    
+        ok_button = QPushButton("OK", self)
+        ok_button.clicked.connect(self.accept)
+        layout.addWidget(ok_button)
+    
+        self.setLayout(layout)
+    
