@@ -14,7 +14,6 @@ QMainWindow {
     border-radius: 10px;
 }
 
-/* Personnalisation de l'intérieur avec des bords arrondis */
 QFrame {
     background-color: rgba(95, 158, 160, 0.8); /* Couleur de fond avec une transparence de 80% */
     border-radius: 10px;

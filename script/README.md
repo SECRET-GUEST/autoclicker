@@ -7,7 +7,7 @@ TUTORIEL
 
 - You can resize window with dragging the right downside corner.
 
-- Use themes to custom your app
+- 
 
 
 

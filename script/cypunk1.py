@@ -128,23 +128,23 @@ from PyQt5.QtCore import Qt, QPoint, QSize,pyqtSignal
 class SizeGrip(QRubberBand):
     def __init__(self, parent):
         super().__init__(QRubberBand.Rectangle, parent)
-        self.setFixedSize(10, 10)
-        self.setWindowFlags(Qt.SubWindow)
-        self.setCursor(Qt.SizeFDiagCursor)
+        self.setFixedSize(10, 10)  # Set the size of the grip to 10x10 pixels
+        self.setWindowFlags(Qt.SubWindow)  # Set the grip as a subwindow of the parent widget
+        self.setCursor(Qt.SizeFDiagCursor)  # Set the cursor to the diagonal resize cursor
 
     def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self.mousePos = event.globalPos()
-            self.parentMousePos = self.parent().mapToGlobal(QPoint())
+        if event.button() == Qt.LeftButton:  # If left button is pressed
+            self.mousePos = event.globalPos()  # Save the current mouse position
+            self.parentMousePos = self.parent().mapToGlobal(QPoint())  # Save the parent's global position
             event.accept()
 
     def mouseMoveEvent(self, event):
-        if event.buttons() == Qt.LeftButton:
-            diff = event.globalPos() - self.mousePos
-            newWidth = max(self.parent().minimumWidth(), self.parent().width() + diff.x())
-            newHeight = max(self.parent().minimumHeight(), self.parent().height() + diff.y())
-            newSize = QSize(newWidth, newHeight)
-            self.parent().resize(newSize)
+        if event.buttons() == Qt.LeftButton:  # If left button is being held down
+            diff = event.globalPos() - self.mousePos  # Calculate the difference between current mouse position and the saved one
+            newWidth = max(self.parent().minimumWidth(), self.parent().width() + diff.x())  # Calculate the new width of the parent widget based on the difference in x axis
+            newHeight = max(self.parent().minimumHeight(), self.parent().height() + diff.y())  # Calculate the new height of the parent widget based on the difference in y axis
+            newSize = QSize(newWidth, newHeight)  # Create a new size object
+            self.parent().resize(newSize)  # Resize the parent widget to the new size
             event.accept()
 
 

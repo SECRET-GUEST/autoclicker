@@ -7,16 +7,16 @@
     color: #4CE0B3;
 }
 
-/* Personnalisation de la bordure extérieure */
+
 QMainWindow {
     background-color: #333333;
     border: 3px solid #FFAF87;
     border-radius: 10px;
 }
 
-/* Personnalisation de l'intérieur avec des bords arrondis */
+
 QFrame {
-    background-color: rgba(95, 158, 160, 0.8); /* Couleur de fond avec une transparence de 80% */
+    background-color: rgba(95, 158, 160, 0.8); 
     border-radius: 10px;
 }
 

@@ -112,7 +112,7 @@
 #| | \| ___]  |  |  | |___ |___ |  |  |  | |__| | \|
          
 
-import sys,os
+import sys
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
@@ -135,28 +135,23 @@ from cypunk1 import cypunk1Window
 
 
 
-#function to make an exe file with py to exe
-def ressource_path(relative_path):
-    try:
-        base_path=sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath('.')
-    return os.path.join(base_path ,relative_path)
-#to make it works, you have to rename all your path with ressource_path (/path/) WHEN YOU WILL TURN THE SCRIPT TO EXE
-#Example : /icon/lol.png  BECOME  ressource_path(/icon/lol.png)
+
 
 
 # Faster to integrate with this window's inception method 
 # TODO : rework.
 class windowCeption(cypunk1Window):
-    def __init__(self):
+    def __init__(self, logger=None):
         super().__init__(
             title="Lemme do it 4 U 🥺",
             window_size="758x400",
             btn_minimize="ico/open.png",
             btn_show="ico/hide.png",
-            stylesheet_path=None
+            stylesheet_path=logz.ressource_path("style/style1.txt")
         )
+        self.logger = logger or logz.configLogs("Autoclicker", "ERRORS.log", use_qt_dialogs=True)
+
+        self.logger.update_theme(self, self.logger.load_config())
 
         Vlay = QVBoxLayout()
         main_page = MainWindow(parent=self)
@@ -166,10 +161,8 @@ class windowCeption(cypunk1Window):
 
         self.central_widget.setLayout(Vlay)
 
-    def apply_stylesheet(self, stylesheet_path):
-        with open(stylesheet_path, "r") as file:
-            stylesheet = file.read()
-            self.setStyleSheet(stylesheet)
+        # Initialize theme
+        self.logger.initialize_theme(self)
 
 
 
@@ -177,42 +170,27 @@ class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        # Store windowCeption instance
-        self.window_ception = parent
-
         # First, configure the error handler
         self.logger = logz.configLogs("Autoclicker", "ERRORS.log", use_qt_dialogs=True)
         self.tables = DarthBMO(self.logger)
         self.recorder = Recorder(self.logger)
         self.overlay = Overlay(self.logger)
 
-        # Load last selected theme from config file
-        last_theme = self.logger.load_config()
+        # Create main widget
+        self.main_widget = QWidget(self)
+        self.setCentralWidget(self.main_widget)
 
-        # I'm using style sheet in txt because python doesn't read well CSS and JSON 
-        # is harder to use and not that much optimized
-        stylesheet_path = ressource_path(f"style/style{last_theme}.txt")
-        stylesheet = self.load_stylesheet(stylesheet_path)
-        self.parent().setStyleSheet(stylesheet)
+        # Create and add widgets after initializing the theme
+        self.GUI()
 
         # Enable zooming for this window
         enable_zoom(self)
-        self.GUI()
 
-    # Function to load our style sheet
-    def load_stylesheet(self, file_path):
-        with open(file_path, 'r') as file:
-            stylesheet = file.read()
-        return stylesheet
+        # Initialize theme
+        self.logger.initialize_theme(self)
 
-    def show_theme_selector_dialog(self):
-        selected_theme = self.logger.show_theme_selector(self)
-        if selected_theme is not None:
-            # Save selected theme in the config file
-            self.logger.save_config(selected_theme)
 
-            stylesheet_path = ressource_path(f"style/style{selected_theme}.txt")
-            self.window_ception.apply_stylesheet(stylesheet_path)
+
 
 
 
@@ -262,7 +240,7 @@ class MainWindow(QMainWindow):
 
     def help_dialog(self):
         # Read the Markdown file
-        with open(ressource_path('README.md'), 'r', encoding='utf-8') as file:
+        with open(self.logger.ressource_path('README.md'), 'r', encoding='utf-8') as file:
             md_content = file.read()
 
         # Display the plain text content in a QDialog
@@ -285,7 +263,7 @@ class MainWindow(QMainWindow):
     def GUI(self):
         # Now the GUI
         self.setWindowTitle(" Lemme do it 4 U 🥺")
-        self.setWindowIcon(QIcon(ressource_path("ico/autoclicker.png")))
+        self.setWindowIcon(QIcon(self.logger.ressource_path("ico/autoclicker.png")))
         self.setGeometry(100, 100, 740, 470)
 
         #Menus
@@ -306,7 +284,10 @@ class MainWindow(QMainWindow):
         menu_bar.addMenu(display_menu)
 
         self.themes_action = QAction("Themes", self)
-        self.themes_action.triggered.connect(self.show_theme_selector_dialog)
+        self.themes_action.setShortcut("Ctrl+T")
+        self.themes_action.triggered.connect(lambda: self.logger.change_theme(self))
+
+
 
         #Menu Help
         help_menu = QMenu("Help", self)
@@ -356,13 +337,13 @@ class MainWindow(QMainWindow):
         help_menu.addAction(help_action)
 
         #Layout
-        Vlay_main = QVBoxLayout()
+        main_layout = QVBoxLayout()
         central_widget = QWidget()
-        central_widget.setLayout(Vlay_main)
+        central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
 
-        Vlay_main.addWidget(self.tabs)
-
+        main_layout.addWidget(self.tabs)
+        
         self.show()
 
 
