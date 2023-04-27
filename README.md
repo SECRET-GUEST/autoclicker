@@ -47,11 +47,9 @@ You can already run a stable version directly from the scripts.
 
 ## Usage / features : 
 
-### 🎌 All apps : 
+- `Zoom` : You can use ctrl + /- or scroll to zoom the whole app
 
-:checkered_flag: Zoom : You can use ctrl + /- or scroll to zoom the whole app
-
-:checkered_flag: Windows : to find other features
+- `Windows` : to find other features
 
 
 
