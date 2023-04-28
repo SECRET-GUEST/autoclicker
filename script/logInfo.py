@@ -113,11 +113,12 @@
 #| | \| ___]  |  |  | |___ |___ |  |  |  | |__| | \|
    
 
-import logging, os, sys
-from PyQt5.QtWidgets import QMessageBox,QDialog
+import logging, os, sys,configparser
 from msgBox import FreeWill, tripleChoice, ThemeSelector
 
-import configparser
+from PyQt5.QtWidgets import QMessageBox,QDialog
+from PyQt5.QtCore import QObject, pyqtSignal
+
 
 class logz(logging.Logger):
     def __init__(self, name, level=logging.NOTSET):
@@ -202,6 +203,9 @@ class logz(logging.Logger):
 #|___ |__| | \| |    | |__] |__| |  \ |  |  |  | |__| | \|    |  | |  | | \| |__/ |___ |___ |  \ 
                                                                                                 
 
+
+
+
     # Load the configuration file and read the 'last_theme' value from it
     def load_config(self):
         # Create a ConfigParser object and read the configuration file
@@ -245,57 +249,51 @@ class logz(logging.Logger):
 #___ _  _ ____ _  _ ____    ___  _ ____ ___  ____ ___ ____ _  _ ____ ____ 
 # |  |__| |___ |\/| |___    |  \ | [__  |__] |__|  |  |    |__| |___ |__/ 
 # |  |  | |___ |  | |___    |__/ | ___] |    |  |  |  |___ |  | |___ |  \ 
-                                                                         
-
-    def show_theme_selector(self, parent):
-        # create a ThemeSelector dialog box with the given parent and logger
-        theme_selector = ThemeSelector(parent, self)
-        # show the dialog box and store the result
-        result = theme_selector.exec_()
-        if result == QDialog.Accepted:
-            # if the "OK" button is clicked, return the ID of the selected theme
-            selected_theme = theme_selector.button_group.checkedId()
-            return selected_theme
-        # return None if the dialog box is closed without clicking "OK"
-        return None
-
-
-    def apply_stylesheet(self, window, stylesheet_path=None):
-        if stylesheet_path is None:
-            # if no stylesheet is specified, use the default stylesheet
-            stylesheet_path = logz.ressource_path("style/style1.txt")
-        # open the stylesheet file and apply it to the given window
-        with open(stylesheet_path) as file:
-            window.setStyleSheet(file.read())   
-    
-
-
-    def initialize_theme(self, window):
-        # load the last-used theme from the config file
-        last_theme = self.load_config()
-        # load the stylesheet for the last-used theme and apply it to the window
-        stylesheet_path = self.ressource_path(f"style/style{last_theme}.txt")
-        self.apply_stylesheet(window, stylesheet_path=stylesheet_path)
-        # update the window's title with the name of the current theme
-        self.update_theme(window, last_theme)   
-    
 
 
     def update_theme(self, window, theme=None):
         if theme is None:
             theme = 1  # set the default theme to 1
+
         # update the window's title to include the name of the current theme
         current_theme_name = f"Thème {theme}"
-        window.setWindowTitle(f"Lemme do it 4 U 🥺 - {current_theme_name}")
-        # load and apply the stylesheet for the current theme
-        self.apply_stylesheet(window, stylesheet_path=self.ressource_path(f"style/style{theme}.txt"))   
+
+        if window is not None:
+            window.setWindowTitle(f"Lemme do it 4 U 🥺 - {current_theme_name}")
+
+            # load and apply the stylesheet for the current theme
+            stylesheet_path = self.ressource_path(f"style/style{theme}.txt")
+            with open(stylesheet_path) as file:
+                window.setStyleSheet(file.read())
+
+
+    def apply_theme_to_all_windows(self, theme, *windows):
+        for window in windows:
+            self.update_theme(window, theme)
+
+
+    def change_theme(self, mainWindow, theme_changed_signal=None):
+        # show the theme selector dialog box
+        theme_selector = ThemeSelector(mainWindow, self)
+    
+        # connect the theme_selector's theme_selected signal to the lambda function
+        theme_selector.theme_selected.connect(lambda selected_theme: self.apply_theme_to_all_windows(selected_theme, mainWindow))
+    
+        # connect the theme_changed_signal to the theme_selector's theme_selected signal
+        if theme_changed_signal is not None:
+            theme_selector.theme_selected.connect(theme_changed_signal.theme_changed)
+    
+        theme_selector.exec_()
     
 
-    def change_theme(self, window):
-        # show the theme selector dialog box and get the ID of the selected theme
-        selected_theme = self.show_theme_selector(window)
-        if selected_theme is not None:
-            # if a theme is selected, save it in the config file and update the window's theme
-            self.save_config(selected_theme)
-            self.update_theme(window, selected_theme)
+    def initialize_theme(self, mainWindow, windowCeption=None):
+        # load the last-used theme from the config file
+        last_theme = self.load_config() 
 
+        # update the theme for both windows
+        self.apply_theme_to_all_windows(last_theme, mainWindow, windowCeption)  
+
+
+
+    class ThemeChangedSignal(QObject): #Emit signal for the title bar
+        theme_changed = pyqtSignal(int) 

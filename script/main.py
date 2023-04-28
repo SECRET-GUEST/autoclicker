@@ -135,11 +135,7 @@ from cypunk1 import cypunk1Window
 
 
 
-
-
-
-# Faster to integrate with this window's inception method 
-# TODO : rework.
+# New window powered by cypunk1 (who is cypunk2 btw : https://github.com/SECRET-GUEST/themes/tree/main/Python/PyQt5/graphical%20user%20interface/Cyberpunk%20interface%202)
 class windowCeption(cypunk1Window):
     def __init__(self, logger=None):
         super().__init__(
@@ -149,23 +145,57 @@ class windowCeption(cypunk1Window):
             btn_show="ico/hide.png",
             stylesheet_path=logz.ressource_path("style/style1.txt")
         )
+
+        # If logger is provided, use it, otherwise create a new logz object with the specified settings
         self.logger = logger or logz.configLogs("Autoclicker", "ERRORS.log", use_qt_dialogs=True)
 
-        self.logger.update_theme(self, self.logger.load_config())
+        # Create an instance of logz to access the ThemeChangedSignal class
+        logz_instance = logz("")
+        # Create an instance of ThemeChangedSignal to manage theme change events
+        self.theme_changed_signal = logz_instance.ThemeChangedSignal()
 
+        # Connect the theme_changed signal to the update_theme_slot method to handle theme changes
+        self.theme_changed_signal.theme_changed.connect(self.update_theme_slot)
+
+        # Load the last used theme from the configuration file
+        last_theme = self.logger.load_config()
+
+        # Update the theme of the window based on the last used theme
+        self.logger.update_theme(self, last_theme)
+
+        # Put the main app in the custom window represented by this class
         Vlay = QVBoxLayout()
         main_page = MainWindow(parent=self)
-
         Vlay.addSpacing(28)
         Vlay.addWidget(main_page)
 
         self.central_widget.setLayout(Vlay)
 
-        # Initialize theme
-        self.logger.initialize_theme(self)
+    # Update themes
+    def update_theme_slot(self, theme):
+        self.logger.update_theme(self, theme)
 
 
 
+# Class containing the recorder to avoid double window issues due to the launching.
+class RecorderContainer(QWidget):
+    def __init__(self, parent=None, logger=None):
+        super().__init__(parent)
+
+        self.recorder = Recorder(logger)
+        layout = QVBoxLayout()
+        layout.addWidget(self.recorder)
+        self.setLayout(layout)
+
+    def set_main_window(self, main_window):
+        self.recorder.set_main_window(main_window)
+
+    def start_recording(self):
+        self.recorder.start_recording()
+
+
+
+# Finally our main app 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -173,21 +203,25 @@ class MainWindow(QMainWindow):
         # First, configure the error handler
         self.logger = logz.configLogs("Autoclicker", "ERRORS.log", use_qt_dialogs=True)
         self.tables = DarthBMO(self.logger)
-        self.recorder = Recorder(self.logger)
+        self.recorder = RecorderContainer(logger=self.logger)
         self.overlay = Overlay(self.logger)
+
+        # Theme initialization
+        self.theme_changed_signal = parent.theme_changed_signal  
+
 
         # Create main widget
         self.main_widget = QWidget(self)
         self.setCentralWidget(self.main_widget)
 
-        # Create and add widgets after initializing the theme
-        self.GUI()
-
         # Enable zooming for this window
         enable_zoom(self)
 
-        # Initialize theme
-        self.logger.initialize_theme(self)
+        last_theme = self.logger.load_config()
+        self.logger.update_theme(self, last_theme)
+
+        # Initialize user interface
+        self.GUI()
 
 
 
@@ -285,7 +319,7 @@ class MainWindow(QMainWindow):
 
         self.themes_action = QAction("Themes", self)
         self.themes_action.setShortcut("Ctrl+T")
-        self.themes_action.triggered.connect(lambda: self.logger.change_theme(self))
+        self.themes_action.triggered.connect(lambda: self.logger.change_theme(self, self.theme_changed_signal))
 
 
 
@@ -322,8 +356,11 @@ class MainWindow(QMainWindow):
 
         #Set initial check states
         self.autoclicker_check.setChecked(True)
+
         self.click_recorder_check.setChecked(True)
-        self.click_recorder_check.setChecked(False) # powered by scotch tape, thank you Phil👌
+        self.click_recorder_check.setChecked(False) 
+
+
         self.overlay_check.setChecked(True)
         self.overlay_check.setChecked(False)
 

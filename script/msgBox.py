@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLabel, QRadioButton, QPushButton, QButtonGroup,QMessageBox
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt,pyqtSignal,QSize
 
+from functools import partial
 
 # simple message according a choice
 class FreeWill(QMessageBox):
@@ -21,6 +22,8 @@ class FreeWill(QMessageBox):
         elif result == QMessageBox.No:
             pass
 
+
+
 # Message to display before closing the program during a loop
 class tripleChoice(QMessageBox):
     def __init__(self, parent, message, action_yes, action_no, custom_action_text, custom_action):
@@ -37,6 +40,7 @@ class tripleChoice(QMessageBox):
         self.action_no = action_no
         self.custom_action = custom_action
 
+
     def exec_and_call_actions(self):
         result = self.exec_()
 
@@ -52,13 +56,13 @@ class tripleChoice(QMessageBox):
 
         return False
 
+
+
+
 # Theme configuration
 class ThemeSelector(QDialog):
-    def __init__(self, parent=None, logger=None):
-        super().__init__(parent)
-        self.logger = logger
+    theme_selected = pyqtSignal(int)  # signal to refresh themes on title bar
 
-class ThemeSelector(QDialog):
     def __init__(self, parent=None, logger=None):
         super().__init__(parent)
         self.logger = logger
@@ -68,42 +72,34 @@ class ThemeSelector(QDialog):
         # Hide context help button
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
 
-
         self.init_ui()
 
+
+    def on_theme_button_clicked(self, theme_id):
+        self.theme_selected.emit(theme_id)
+        self.accept()
+
+
     def init_ui(self):
-        # Create a vertical layout for the dialog
+        # Fisrt we make a vertical grid
         layout = QVBoxLayout()
 
-        # Create a button group for the radio buttons
-        self.button_group = QButtonGroup(self)
-
-        # Add radio buttons for each theme
+        # Add buttons for each theme
         for i in range(1, 6):
             # Create a horizontal layout for the theme row
             theme_layout = QHBoxLayout()
 
-            # Add an image label for the theme preview
-            image_label = QLabel(self)
+            # Add an image button for the theme
+            theme_button = QPushButton(self)
             image_path = self.logger.ressource_path(f"ico/theme{i}.png")
-            image_label.setPixmap(QPixmap(image_path).scaled(108, 108))
-            theme_layout.addWidget(image_label)
-
-            # Add a radio button for the theme
-            radio_button = QRadioButton(self)
-            self.button_group.addButton(radio_button, i)
-            theme_layout.addWidget(radio_button)
+            theme_button.setIcon(QIcon(image_path))
+            theme_button.setIconSize(QSize(108, 108))
+            theme_button.clicked.connect(partial(self.on_theme_button_clicked, i))
+            theme_layout.addWidget(theme_button)
 
             # Add the theme row layout to the dialog layout
             layout.addLayout(theme_layout)
 
-        # Set the first radio button as checked by default
-        self.button_group.button(1).setChecked(True)
-
-        # Add an "OK" button to accept the user selection
-        ok_button = QPushButton("OK", self)
-        ok_button.clicked.connect(self.accept)
-        layout.addWidget(ok_button)
-
         # Set the dialog layout
         self.setLayout(layout)
+
