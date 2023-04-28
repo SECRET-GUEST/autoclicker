@@ -115,7 +115,6 @@
 import sys
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget, QVBoxLayout, QAction,  QMenu, QDialog, QLabel, QVBoxLayout,QTextEdit
 
 from recorder import Recorder
@@ -134,8 +133,8 @@ from cypunk1 import cypunk1Window
 #OPENING | https://www.youtube.com/watch?v=_85LaeTCtV8 :3
 
 
-
-# New window powered by cypunk1 (who is cypunk2 btw : https://github.com/SECRET-GUEST/themes/tree/main/Python/PyQt5/graphical%20user%20interface/Cyberpunk%20interface%202)
+# Faster to integrate with this window's inception method 
+# TODO : rework.class windowCeption(cypunk1Window):
 class windowCeption(cypunk1Window):
     def __init__(self, logger=None):
         super().__init__(
@@ -159,7 +158,7 @@ class windowCeption(cypunk1Window):
 
         # Load the last used theme from the configuration file
         last_theme = self.logger.load_config()
-
+        
         # Update the theme of the window based on the last used theme
         self.logger.update_theme(self, last_theme)
 
@@ -177,25 +176,7 @@ class windowCeption(cypunk1Window):
 
 
 
-# Class containing the recorder to avoid double window issues due to the launching.
-class RecorderContainer(QWidget):
-    def __init__(self, parent=None, logger=None):
-        super().__init__(parent)
 
-        self.recorder = Recorder(logger)
-        layout = QVBoxLayout()
-        layout.addWidget(self.recorder)
-        self.setLayout(layout)
-
-    def set_main_window(self, main_window):
-        self.recorder.set_main_window(main_window)
-
-    def start_recording(self):
-        self.recorder.start_recording()
-
-
-
-# Finally our main app 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -203,7 +184,7 @@ class MainWindow(QMainWindow):
         # First, configure the error handler
         self.logger = logz.configLogs("Autoclicker", "ERRORS.log", use_qt_dialogs=True)
         self.tables = DarthBMO(self.logger)
-        self.recorder = RecorderContainer(logger=self.logger)
+        self.recorder = Recorder(self.logger)
         self.overlay = Overlay(self.logger)
 
         # Theme initialization
@@ -222,8 +203,6 @@ class MainWindow(QMainWindow):
 
         # Initialize user interface
         self.GUI()
-
-
 
 
 
@@ -296,11 +275,6 @@ class MainWindow(QMainWindow):
 
     def GUI(self):
         # Now the GUI
-        self.setWindowTitle(" Lemme do it 4 U 🥺")
-        self.setWindowIcon(QIcon(self.logger.ressource_path("ico/autoclicker.png")))
-        self.setGeometry(100, 100, 740, 470)
-
-        #Menus
         menu_bar = self.menuBar()
 
 
@@ -356,11 +330,8 @@ class MainWindow(QMainWindow):
 
         #Set initial check states
         self.autoclicker_check.setChecked(True)
-
         self.click_recorder_check.setChecked(True)
-        self.click_recorder_check.setChecked(False) 
-
-
+        self.click_recorder_check.setChecked(False) # powered by scotch tape, thank you Phil👌
         self.overlay_check.setChecked(True)
         self.overlay_check.setChecked(False)
 
@@ -376,12 +347,10 @@ class MainWindow(QMainWindow):
         #Layout
         main_layout = QVBoxLayout()
         central_widget = QWidget()
+
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
-
         main_layout.addWidget(self.tabs)
-        
-        self.show()
 
 
 

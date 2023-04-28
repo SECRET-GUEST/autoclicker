@@ -464,8 +464,8 @@ class Recorder(QWidget):
         self.bruh = HardWorkingBruh(logger)
         
         self.main_window = None
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
+        self.VLay_l_recorder = QVBoxLayout()
+        self.setLayout(self.VLay_l_recorder)
 
     def set_main_window(self, main_window):
         self.main_window = main_window
@@ -500,7 +500,7 @@ class Recorder(QWidget):
         keyboard_listener.start()
 
         #Add the instance of HardWorkingBruh to the Recorder widget
-        self.layout.addWidget(ex)
+        self.VLay_l_recorder.addWidget(ex)
 
 
 #Finally, we start the event loop
