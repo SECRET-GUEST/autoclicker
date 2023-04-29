@@ -28,7 +28,7 @@
 
 ![4](https://user-images.githubusercontent.com/92639080/234941881-0069b75d-89e6-4b2c-ba6e-47357a6fe738.png)
 
-## TODO :
+## TODO (me or contributors) :
 - Improve theme to resized window on every sides.
 - Add a music system that user could load, mute / change volume working during the bot is running with a default one.
 - Add a "G A M E  O V E R" pop up when the script is entirely done.
