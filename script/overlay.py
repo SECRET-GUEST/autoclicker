@@ -173,6 +173,15 @@ class layer0(QMainWindow):
         self.layout.addWidget(self.close_image_button)
 
 
+    def update_theme_slot(self, theme):
+        if self.config_popup is not None:
+            self.logger.update_theme(self.config_popup, theme)  
+
+    def set_theme_changed_signal(self, theme_changed_signal):
+        self.theme_changed_signal = theme_changed_signal
+        self.theme_changed_signal.theme_changed.connect(self.update_theme_slot)
+
+
 # Upload an image and display it in a separate window
     def upload_image(self):
         if not self.image_window:
@@ -304,7 +313,10 @@ class layer1(QWidget):
 class layer_config(QDialog):
     def __init__(self,logger, image_window):
         super().__init__()
-
+        
+        # Hide context help button
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint | Qt.WindowStaysOnTopHint)
+        
         #Error handler 
         self.logger = logger
 

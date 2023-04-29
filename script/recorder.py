@@ -439,7 +439,7 @@ class HardWorkingBruh(QWidget):
         # Apply the vertical layout
         self.setLayout(v_lay_ac)
 
-        self.show()
+    #    self.show()
 
 
 

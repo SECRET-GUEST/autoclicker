@@ -115,7 +115,7 @@
 import sys
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget, QVBoxLayout, QAction,  QMenu, QDialog, QLabel, QVBoxLayout,QTextEdit
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget, QVBoxLayout, QAction,  QMenu, QLabel, QVBoxLayout,QTextEdit
 
 from recorder import Recorder
 from tables import DarthBMO
@@ -123,7 +123,7 @@ from overlay import layer0 as Overlay
 from zoom_handler import enable_zoom
 from logInfo import logz
 
-from cypunk1 import cypunk1Window
+from cypunk1 import cypunk1Window,Cypunk1Dialog
 
 #___  ____ _ _ _ ____ ____    ___  _    ____ _  _ ___
 #|__] |  | | | | |___ |__/    |__] |    |__| |\ |  |
@@ -134,15 +134,15 @@ from cypunk1 import cypunk1Window
 
 
 # Faster to integrate with this window's inception method 
-# TODO : rework.class windowCeption(cypunk1Window):
+# TODO : rework.class windowCeption(cypunk1Window) to integrate the 2nd main window
+
 class windowCeption(cypunk1Window):
     def __init__(self, logger=None):
         super().__init__(
             title="Lemme do it 4 U 🥺",
             window_size="758x400",
             btn_minimize="ico/open.png",
-            btn_show="ico/hide.png",
-            stylesheet_path=logz.ressource_path("style/style1.txt")
+            btn_show="ico/hide.png"
         )
 
         # If logger is provided, use it, otherwise create a new logz object with the specified settings
@@ -150,21 +150,29 @@ class windowCeption(cypunk1Window):
 
         # Create an instance of logz to access the ThemeChangedSignal class
         logz_instance = logz("")
+
         # Create an instance of ThemeChangedSignal to manage theme change events
         self.theme_changed_signal = logz_instance.ThemeChangedSignal()
+
+        # Load the last used theme from the configuration file
+        last_theme = self.logger.load_config()
+
+        # Update the theme of the window based on the last used theme
+        self.logger.update_theme(self, last_theme)
 
         # Connect the theme_changed signal to the update_theme_slot method to handle theme changes
         self.theme_changed_signal.theme_changed.connect(self.update_theme_slot)
 
-        # Load the last used theme from the configuration file
-        last_theme = self.logger.load_config()
-        
-        # Update the theme of the window based on the last used theme
-        self.logger.update_theme(self, last_theme)
+        # Configure the error handler
+        self.tables = DarthBMO(self.logger)
+        self.recorder = Recorder(self.logger)
+        self.overlay = Overlay(self.logger)
 
         # Put the main app in the custom window represented by this class
         Vlay = QVBoxLayout()
-        main_page = MainWindow(parent=self)
+        stylesheet_path = logz.ressource_path("style/style1.txt")
+        main_page = MainWindow(parent=self, cypunk1window=self, stylesheet_path=stylesheet_path)
+        main_page.set_overlay(self.overlay)
         Vlay.addSpacing(28)
         Vlay.addWidget(main_page)
 
@@ -176,35 +184,44 @@ class windowCeption(cypunk1Window):
 
 
 
-
 class MainWindow(QMainWindow):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None,cypunk1window=None,stylesheet_path=None):
         super().__init__(parent)
 
-        # First, configure the error handler
-        self.logger = logz.configLogs("Autoclicker", "ERRORS.log", use_qt_dialogs=True)
-        self.tables = DarthBMO(self.logger)
-        self.recorder = Recorder(self.logger)
-        self.overlay = Overlay(self.logger)
+        self.cypunk1window = cypunk1window
+        self.stylesheet_path = stylesheet_path
+
+        # Set the logger, overlay, and tables attributes from the parent window
+        self.logger = parent.logger
+        self.overlay = parent.overlay
+        self.tables = parent.tables
+        self.recorder = parent.recorder
 
         # Theme initialization
-        self.theme_changed_signal = parent.theme_changed_signal  
+        self.theme_changed_signal = parent.theme_changed_signal
 
-
-        # Create main widget
-        self.main_widget = QWidget(self)
-        self.setCentralWidget(self.main_widget)
+        # Create a dictionary to store widget instances
+        self.widget_instances = {}
 
         # Enable zooming for this window
         enable_zoom(self)
-
-        last_theme = self.logger.load_config()
-        self.logger.update_theme(self, last_theme)
 
         # Initialize user interface
         self.GUI()
 
 
+
+    # Connect the theme_changed signal to the update_theme_slot method of the Overlay instance
+    def set_overlay(self, overlay_instance):
+        self.overlay = overlay_instance
+        self.theme_changed_signal.theme_changed.connect(self.overlay.update_theme_slot)
+
+        # Add the Overlay instance to the widget_instances dictionary
+        self.widget_instances["overlay"] = self.overlay
+
+    def update_all_widgets_theme(self, theme):
+        for widget_instance in self.widget_instances.values():
+            self.logger.update_theme(widget_instance, theme)
 
 
 #____ ___ _  _ ____ ____    ____ _  _ _  _ ____ ___ _ ____ _  _ ____ 
@@ -239,33 +256,34 @@ class MainWindow(QMainWindow):
             self.tabs.removeTab(self.tabs.indexOf(self.overlay_tab))
     
 
+    def create_dialog(self, title):
+        dialog = Cypunk1Dialog(self, stylesheet_path=self.stylesheet_path)
+        dialog.setWindowTitle(title)
+        return dialog
+
+
     def about_dialog(self):
-        # Open a dialog box showing information about the program
-        dialog = QDialog(self)
-        dialog.setWindowTitle("About")
-        label = QLabel("GitHub : <a href='https://github.com/SECRET-GUEST/autoclicker'>SECRET-GUEST/autoclicker</a>", dialog)
-        label.setOpenExternalLinks(True)
-        Vlay_about = QVBoxLayout(dialog)
-        Vlay_about.addWidget(label)
-        dialog.exec_()
+        self.about_dial = self.cypunk1window.create_dialog("About")
+        self.about_dial.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
 
-
+        self.about_dial_label = QLabel("GitHub : <a href='https://github.com/SECRET-GUEST/autoclicker'>SECRET-GUEST/autoclicker</a>", self.about_dial )
+        self.about_dial_label.setOpenExternalLinks(True)
+        self.Vlay_about = QVBoxLayout(self.about_dial)
+        self.Vlay_about.addWidget(self.about_dial_label)
 
     def help_dialog(self):
         # Read the Markdown file
         with open(self.logger.ressource_path('README.md'), 'r', encoding='utf-8') as file:
             md_content = file.read()
 
-        # Display the plain text content in a QDialog
-        dialog = QDialog(self)
-        dialog.setWindowTitle("Help")
-        dialog.setWindowFlags(dialog.windowFlags() & ~Qt.WindowContextHelpButtonHint)
-        text_view = QTextEdit(dialog)
-        text_view.setPlainText(md_content)
-        text_view.setReadOnly(True)
-        Vlay_help = QVBoxLayout(dialog)
-        Vlay_help.addWidget(text_view)
-        dialog.exec_()
+        self.help_dial = self.cypunk1window.create_dialog("Help")
+        self.help_dial.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
+
+        self.text_view = QTextEdit(self.help_dial)
+        self.text_view.setPlainText(md_content)
+        self.text_view.setReadOnly(True)
+        self.Vlay_help = QVBoxLayout(self.help_dial)
+        self.Vlay_help.addWidget(self.text_view)
 
 
 #____ ____ ____ ___  _  _ _ ____ ____ _       _  _ ____ ____ ____    _ _  _ ___ ____ ____ ____ ____ ____ ____ 
@@ -274,85 +292,89 @@ class MainWindow(QMainWindow):
    
 
     def GUI(self):
-        # Now the GUI
-        menu_bar = self.menuBar()
+            # Now the GUI
+            menu_bar = self.menuBar()
+    
+    
+            #Menu Windows
+            windows_menu = QMenu("Windows", self)
+            menu_bar.addMenu(windows_menu)
+    
+            self.autoclicker_check = QAction("Autoclicker", self, checkable=True)
+            self.click_recorder_check = QAction("Click Recorder", self, checkable=True)
+            self.overlay_check = QAction("Overlay", self, checkable=True)
+    
+    
+            #Menu Display
+            display_menu = QMenu("Display", self)
+            menu_bar.addMenu(display_menu)
+    
+            self.themes_action = QAction("Themes", self)
+            self.themes_action.setShortcut("Ctrl+T")
+            self.themes_action.triggered.connect(lambda: self.logger.change_theme(self, self.theme_changed_signal))
+    
+    
+    
+            #Menu Help
+            help_menu = QMenu("Help", self)
+            menu_bar.addMenu(help_menu)
+    
+            about_action = QAction("About", self)
+            about_action.triggered.connect(self.about_dialog)
+    
+            help_action = QAction("?", self)
+            help_action.triggered.connect(self.help_dialog)
+    
+    
+            #Tabs 
+            self.tabs = QTabWidget()
+    
+            #Add and configure tabs
+            self.overlay_tab = self.overlay
+            self.autoclicker_tab = self.tables
+            self.click_recorder_tab = self.recorder
+            self.click_recorder_tab.set_main_window(self)
+            self.click_recorder_tab.start_recording()
+    
+    
+            self.tabs.addTab(self.autoclicker_tab, "Autoclicker")
+            self.tabs.addTab(self.click_recorder_tab, "Recorder")
+            self.tabs.addTab(self.overlay_tab, "Overlay")
+    
+            #Connect signals
+            self.autoclicker_check.toggled.connect(self.toggle_autoclicker_tab)
+            self.click_recorder_check.toggled.connect(self.toggle_click_recorder_tab)
+            self.overlay_check.toggled.connect(self.toggle_overlay_tab)
+    
+            #Set initial check states
+            self.autoclicker_check.setChecked(True)
+            self.click_recorder_check.setChecked(True)
+            self.click_recorder_check.setChecked(False) # powered by scotch tape, thank you Phil👌
+            self.overlay_check.setChecked(True)
+            self.overlay_check.setChecked(False)
+    
+            #Add menu actions
+            windows_menu.addAction(self.autoclicker_check)
+            windows_menu.addAction(self.click_recorder_check)
+            windows_menu.addAction(self.overlay_check)
+    
+            display_menu.addAction(self.themes_action)
+            help_menu.addAction(about_action)
+            help_menu.addAction(help_action)
+    
+            #Layout
+            main_layout = QVBoxLayout()
+            central_widget = QWidget()
+            central_widget.setLayout(main_layout)
+            self.setCentralWidget(central_widget)
+    
+            main_layout.addWidget(self.tabs)
+
+#           self.show()
 
 
-        #Menu Windows
-        windows_menu = QMenu("Windows", self)
-        menu_bar.addMenu(windows_menu)
-
-        self.autoclicker_check = QAction("Autoclicker", self, checkable=True)
-        self.click_recorder_check = QAction("Click Recorder", self, checkable=True)
-        self.overlay_check = QAction("Overlay", self, checkable=True)
-
-
-        #Menu Display
-        display_menu = QMenu("Display", self)
-        menu_bar.addMenu(display_menu)
-
-        self.themes_action = QAction("Themes", self)
-        self.themes_action.setShortcut("Ctrl+T")
-        self.themes_action.triggered.connect(lambda: self.logger.change_theme(self, self.theme_changed_signal))
-
-
-
-        #Menu Help
-        help_menu = QMenu("Help", self)
-        menu_bar.addMenu(help_menu)
-
-        about_action = QAction("About", self)
-        about_action.triggered.connect(self.about_dialog)
-
-        help_action = QAction("?", self)
-        help_action.triggered.connect(self.help_dialog)
-
-
-        #Tabs 
-        self.tabs = QTabWidget()
-
-        #Add and configure tabs
-        self.overlay_tab = self.overlay
-        self.autoclicker_tab = self.tables
-        self.click_recorder_tab = self.recorder
-        self.click_recorder_tab.set_main_window(self)
-        self.click_recorder_tab.start_recording()
-
-
-        self.tabs.addTab(self.autoclicker_tab, "Autoclicker")
-        self.tabs.addTab(self.click_recorder_tab, "Recorder")
-        self.tabs.addTab(self.overlay_tab, "Overlay")
-
-        #Connect signals
-        self.autoclicker_check.toggled.connect(self.toggle_autoclicker_tab)
-        self.click_recorder_check.toggled.connect(self.toggle_click_recorder_tab)
-        self.overlay_check.toggled.connect(self.toggle_overlay_tab)
-
-        #Set initial check states
-        self.autoclicker_check.setChecked(True)
-        self.click_recorder_check.setChecked(True)
-        self.click_recorder_check.setChecked(False) # powered by scotch tape, thank you Phil👌
-        self.overlay_check.setChecked(True)
-        self.overlay_check.setChecked(False)
-
-        #Add menu actions
-        windows_menu.addAction(self.autoclicker_check)
-        windows_menu.addAction(self.click_recorder_check)
-        windows_menu.addAction(self.overlay_check)
-
-        display_menu.addAction(self.themes_action)
-        help_menu.addAction(about_action)
-        help_menu.addAction(help_action)
-
-        #Layout
-        main_layout = QVBoxLayout()
-        central_widget = QWidget()
-
-        central_widget.setLayout(main_layout)
-        self.setCentralWidget(central_widget)
-        main_layout.addWidget(self.tabs)
-
-
+    
+    
 
 #____ ____ ____ _  _ ____ ___    _    ____ _  _ _  _ ____ _  _
 #|__/ |  | |    |_/  |___  |     |    |__| |  | |\ | |    |__|

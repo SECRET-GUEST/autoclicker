@@ -112,7 +112,7 @@
 #| | \| ___]  |  |  | |___ |___ |  |  |  | |__| | \|
         
 import os
-from PyQt5.QtWidgets import QMainWindow,QApplication, QWidget, QPushButton, QFrame, QLabel, QMessageBox, QVBoxLayout, QSizeGrip,QRubberBand
+from PyQt5.QtWidgets import QMainWindow, QWidget, QPushButton, QFrame, QLabel, QMessageBox, QVBoxLayout, QSizeGrip,QRubberBand,QDialog
 from PyQt5.QtGui import QIcon, QPainterPath, QRegion, QPainter, QPainterPath, QPalette
 from PyQt5.QtCore import Qt, QPoint, QSize,pyqtSignal
 
@@ -189,12 +189,16 @@ class cypunkTitle1(QWidget):
 
 
 class cypunk1Window(QMainWindow):
-    resized = pyqtSignal()  # Ajoutez cette ligne
+    resized = pyqtSignal()
 
     def __init__(self, title, window_size, btn_minimize=None, btn_show=None, stylesheet_path=None):
         super().__init__()
         self.mwgui(title, window_size, btn_minimize, btn_show, stylesheet_path)
 
+    def create_dialog(self, title=""):
+        dialog = Cypunk1Dialog(self)
+        dialog.setWindowTitle(title)
+        return dialog
 
 
     # Graphical user interface of main window
@@ -411,10 +415,10 @@ class cypunk1Window(QMainWindow):
                               
                                                      
 class Cypunk1MessageBox(QMessageBox):
-    def __init__(self,stylesheet_path=None, *args, **kwargs): # pass stylesheet as argument
-        super().__init__(*args, **kwargs)
-
-        self.mbGui(stylesheet_path)  
+    def __init__(self, parent=None, stylesheet_path=None):
+        super().__init__(parent)
+        self.parent = parent
+        self.mbGui(stylesheet_path)
 
 
     def mbGui(self,stylesheet_path):
@@ -471,5 +475,67 @@ class Cypunk1MessageBox(QMessageBox):
             self.move(event.globalPos() - self.dragPosition)
             event.accept()
 
+
+
+                                                     
+class Cypunk1Dialog(QDialog):
+    def __init__(self, parent=None, stylesheet_path=None):
+        super().__init__(parent)
+        self.parent = parent
+        self.dialGui(stylesheet_path)
+
+    def dialGui(self,stylesheet_path):
+        #Load stylesheet if available
+        if stylesheet_path:
+            with open(stylesheet_path, "r") as file:
+                stylesheet = file.read()
+                self.setStyleSheet(stylesheet)  
+     
+     
+        self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)  # set window flags
+        self.setAttribute(Qt.WA_NoSystemBackground, True)  # set widget attribute for no system background
+        self.setAttribute(Qt.WA_TranslucentBackground, True)  # set widget attribute for translucent background
+   
+
+
+    # This function is similar to the Hexagon function you saw before, but
+    # here you can also assign and use colours for the message box
+    def paintEvent(self, event):
+        # Create a QPainter object to paint on the widget
+        painter = QPainter(self)
+
+        # Set the brush color to the background color of the widget
+        painter.setBrush(self.palette().brush(QPalette.Background))
+
+        # Create a QPainterPath object to define the shape of the widget
+        path = QPainterPath()
+        path.moveTo(30, 0)
+        path.lineTo(self.width() - 20, 0)
+        path.lineTo(self.width(), 20)
+        path.lineTo(self.width(), self.height() - 0)
+        path.lineTo(self.width() - 20, self.height())
+        path.lineTo(20, self.height())
+        path.lineTo(0, self.height() - 20)
+        path.lineTo(0, 0)
+
+        # Close the subpath to complete the shape
+        path.closeSubpath()
+
+        # Draw the shape using the QPainter object
+        painter.drawPath(path)
+
+
+
+
+#Functions to move the window by holding left mouse button
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.dragPosition = event.globalPos() - self.frameGeometry().topLeft()
+            event.accept()
+
+    def mouseMoveEvent(self, event):
+        if event.buttons() == Qt.LeftButton:
+            self.move(event.globalPos() - self.dragPosition)
+            event.accept()
 
 
