@@ -123,11 +123,14 @@ from PyQt5.QtCore import Qt,QTimer
 from PyQt5.QtWidgets import (QMainWindow, QVBoxLayout,QHBoxLayout, QTableWidget, QSpacerItem,
                             QPushButton,QCheckBox,  QWidget, QComboBox, QLabel, QLineEdit, QSpinBox, 
                             QDoubleSpinBox, QFileDialog,QSizePolicy)
+
 from pynput import mouse
 from pynput.mouse import  Controller as MouseController, Button
 from pynput.mouse import Listener as MouseListener
 from pynput.keyboard import Key, Controller as KeyboardController
 from pynput.keyboard import Listener
+
+from contextlib import nullcontext
 
 from functools import partial
 
@@ -314,7 +317,6 @@ class DarthBMO(QMainWindow):
 
 
 
-# Function to enter keywords
     def keywords_widgets(self, row):
         # Create a line edit widget for the keywords to be typed
         line_edit = QLineEdit()
@@ -325,7 +327,6 @@ class DarthBMO(QMainWindow):
         delay_spinbox = self.create_delay_spinbox()
         # Return the widgets as a list
         return [separator_dropdown, line_edit, None, delay_spinbox]
-    
 
 
 
@@ -858,12 +859,24 @@ class DarthBMO(QMainWindow):
 
 
 
-
-
-
                         # Perform keywords typing action
                         elif action_type == "Keywords":
                             try:
+                                # Define a function to get the key for a given separator
+                                def get_key_for_char(separator):
+                                    # Define a dictionary of special characters and their corresponding keys
+                                    special_chars = {
+                                        ',': ',',
+                                        '.': '.',
+                                        '-': '-',
+                                        '_': '_',
+                                        ';': ';',
+                                        'Enter': Key.enter
+                                    }
+                                    # Return the key for the given separator from the dictionary
+                                    return special_chars.get(separator)                     
+
+                                # Get the text from the keyword cell and the separator from the dropdown
                                 keywords_text = self.table.cellWidget(row, 2).text()
                                 separator_widget = self.table.cellWidget(row, 1)
                                 if isinstance(separator_widget, QComboBox):
@@ -871,35 +884,38 @@ class DarthBMO(QMainWindow):
                                 else:
                                     separator = ","
 
+                                # Replace the separator with the appropriate character
                                 if separator == "Enter":
                                     keywords_text = keywords_text.replace(",", "\n")
                                 else:
                                     keywords_text = keywords_text.replace(",", separator.strip())
 
+                                # Split the keywords into a list
                                 keywords = keywords_text.split(separator)
 
+                                # Get the key to press between keywords
+                                key = get_key_for_char(separator)
+
+                                # Type each keyword and press the key between them
                                 for i, keyword in enumerate(keywords):
                                     keyword = keyword.strip()
 
                                     if keyword:
                                         keyboard_controller.type(keyword)
                                         if i < len(keywords) - 1:
-                                            if separator != "\n":
-                                                if separator == ",":
-                                                    keyboard_controller.press(separator)
-                                                    keyboard_controller.release(separator)
-                                                else:
-                                                    with keyboard_controller.pressed(Key.shift):
-                                                        keyboard_controller.press(separator)
-                                                        keyboard_controller.release(separator)
+                                            if key != Key.enter:
+                                                keyboard_controller.press(key)
+                                                keyboard_controller.release(key)
                                             else:
                                                 keyboard_controller.press(Key.enter)
                                                 keyboard_controller.release(Key.enter)
                             except Exception as e:
+                                # If an error occurs, log the error and show an error message to the user
                                 self.logger.exception(f"Error in 'Keywords' action:  {e}\n\n Thanks to share the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
                                 self.logger.show_error(None, f"Error in 'Keywords' action: {e} \n\n Please save the commands and share it with the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
 
-                            time.sleep(delay)
+                            # Wait for the specified delay
+                            time.sleep(delay)                       
 
 
 
