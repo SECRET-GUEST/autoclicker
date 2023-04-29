@@ -16,8 +16,6 @@
 ![5](https://user-images.githubusercontent.com/92639080/234941921-0068ef8c-ff9f-44eb-90f7-c382955a3086.png)
 
 
-# One last issue to fix before release (still beta but stable)
-
 ## Description :
 
 **HardWorkingBruh** is a powerful and versatile tool designed to streamline your repetitive tasks and actions on your computer. Say hello to your new bruh for automating tasks and making your life easier! **HardWorkingBruh**  is here to boost your productivity and take care of your **repetitive tasks** . Perfect for **gamers** , **coders** , or anyone looking to save time on **everyday tasks** . With its powerful tables, flexible recording, and handy **overlay** features, this **autoclicker** is the ultimate companion for all your clicking needs. Whether it's **pixel wars**, **keyword lists**, or just a **quick combo press**, this bruh's got your back!
