@@ -30,10 +30,12 @@
 
 ![4](https://user-images.githubusercontent.com/92639080/234941881-0069b75d-89e6-4b2c-ba6e-47357a6fe738.png)
 
-
-## Common issues :
-
-:black_small_square: Last issue to fix before the release : Reload script who reload badly for some reason
+## TODO :
+- Add a music system that user could load, mute / change volume working during the bot is running with a default one
+- Add an " game over " when the script is entirely done.
+- Add new fuction using AI to do the stuff directly.
+- Add new function to make a plugin working with selenium to do stuff in the browser without using the clickbot
+- Improve the theme logic to let the code be more reusable for all new function with a better pop up system.
 
 ![image](https://user-images.githubusercontent.com/92639080/234765247-d34deb5b-b194-4b2c-bbcc-aa918d9fcc1a.png)
 
