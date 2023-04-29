@@ -45,7 +45,7 @@
 
 - `Zoom` : You can use ctrl + /- or scroll to zoom the whole app
 
-- `Windows` : to find other features
+- `Windows` : You can resize the window by dragging the righ down side corner 
 
 
 
