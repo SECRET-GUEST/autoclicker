@@ -117,18 +117,19 @@
 #| |\ | [__   |  |__| |    |    |__|  |  | |  | |\ |
 #| | \| ___]  |  |  | |___ |___ |  |  |  | |__| | \|
     
-import sys, time,threading,uuid, random
+import  time,threading,uuid, random
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt,QTimer
 from PyQt5.QtWidgets import (QMainWindow, QVBoxLayout,QHBoxLayout, QTableWidget, QSpacerItem,
                             QPushButton,QCheckBox,  QWidget, QComboBox, QLabel, QLineEdit, QSpinBox, 
                             QDoubleSpinBox, QFileDialog,QSizePolicy)
-
 from pynput import mouse
 from pynput.mouse import  Controller as MouseController, Button
 from pynput.mouse import Listener as MouseListener
 from pynput.keyboard import Key, Controller as KeyboardController
 from pynput.keyboard import Listener
+
+from functools import partial
 
 #___  ____ _ _ _ ____ ____    ___  _    ____ _  _ ___
 #|__] |  | | | | |___ |__/    |__] |    |__| |\ |  |
@@ -440,8 +441,13 @@ class DarthBMO(QMainWindow):
     
     
     def clear_table(self):
-        # Clear all rows from the script table
-        self.table.setRowCount(0)
+        def clear_action():
+            # Clear all rows from the script table
+            self.table.setRowCount(0)
+
+        confirmation_message = "Do you really want to delete everything?"
+        self.logger.show_choice(self, confirmation_message, clear_action)
+
     
     
     def toggle_time_machine(self, state):
@@ -474,84 +480,119 @@ class DarthBMO(QMainWindow):
 #|  \ |__| |_|_|    |  | |___  |  | |__| | \| ___] 
                                                 
 
+    def add_row(self):
+        # Get the current number of rows in the table
+        row = self.table.rowCount()
+        # Call _add_or_insert_row to add a new row at the end of the table
+        self._add_or_insert_row(row)
+
+
+    def insert_row(self, row):
+        # Call _add_or_insert_row to insert a new row below the specified row
+        self._add_or_insert_row(row + 1)
+
+
+    def _add_or_insert_row(self, row):
+        # Generate a new unique row ID
+        row_id = uuid.uuid4()
+        # Add the row ID to the set of row IDs
+        self.row_ids.add(row_id)
+    
+        # Insert a new row into the table at the specified position
+        self.table.insertRow(row)
+    
+        # Create a dropdown widget to select the action type for the new row
+        action_type_dropdown = self._create_action_type_dropdown(row)
+        # Set the cell widget for the action type dropdown
+        self.table.setCellWidget(row, 0, action_type_dropdown)
+    
+        # Create widgets for the selected action type and add them to the row
+        widgets = self.get_widgets_for_action_type(action_type_dropdown.currentText(), row)
+        self.add_widgets(row, widgets)
+    
+        # Create a button widget to delete the new row and add it to the table
+        delete_button = self._create_delete_button(row_id)
+        self.table.setCellWidget(row, 5, delete_button)
+    
+        # Create a button widget to insert a new row below the new row and add it to the table
+        add_button = self._create_add_button(row)
+        self.table.setCellWidget(row, 6, add_button)
+    
+        # Use QTimer to defer the execution of update_row_widgets
+        QTimer.singleShot(0, lambda: self.update_row_widgets(row))
+
+
+
+
+    def _create_action_type_dropdown(self, row):
+        # Create a dropdown widget for selecting action type
+        action_type_dropdown = QComboBox()
+        # Add available action types to the dropdown
+        action_type_dropdown.addItems(["Clic", "Double clic", "Move", "Press", "Combo", "Scroll", "Text", "Keywords", "Wait"])
+        # Connect the currentIndexChanged signal to update the widgets for the row when the action type is changed
+        action_type_dropdown.currentIndexChanged.connect(partial(self.update_row_widgets, row))
+        return action_type_dropdown
+
+    def _create_delete_button(self, row_id):
+        # Create a button widget to delete the row
+        delete_button = QPushButton("-")
+        # Add the row ID as an attribute to the button so it can be identified when clicked
+        delete_button.row_id = row_id
+        # Connect the button clicked signal to the delete_row method with the row ID as argument
+        delete_button.clicked.connect(lambda: self.delete_row(row_id))
+        return delete_button
+
+    def _create_add_button(self, row):
+        # Create a button widget to insert a new row below the current row
+        add_button = QPushButton("+")
+        # Add the row number as an attribute to the button so it can be used in the lambda function
+        add_button.row = row
+        # Connect the button clicked signal to the insert_row method with the row number as argument
+        add_button.clicked.connect(lambda: self.insert_row(add_button.row))
+        return add_button
+
+    def get_widgets_for_action_type(self, action_type, row):
+        # Map the available action types to their corresponding widget functions
+        widgets_map = {
+            "Clic": self.click_widgets,
+            "Double clic": self.click_widgets,
+            "Move": self.move_widgets,
+            "Press": self.key_press_widgets,
+            "Combo": self.combo_widgets,
+            "Scroll": self.scroll_widgets,
+            "Text": self.text_widgets,
+            "Keywords": self.keywords_widgets,
+            "Wait": self.wait_widgets
+        }
+        # Return the widget list generated by the appropriate widget function based on the action type
+        return widgets_map.get(action_type, lambda: None)(row)
 
 
     def update_row_widgets(self, row):
-        # Get the current action type from the dropdown menu in the first columndef update_row_widgets(self, row):
-        action_type = self.table.cellWidget(row, 0).currentText()
-        # Define a dictionary that maps each action type to a list of widgets to add to the row
-        widgets = {
-            "Clic": self.click_widgets(row),
-            "Double clic": self.click_widgets(row),
-            "Move": self.move_widgets(row),
-            "Press": self.key_press_widgets(row),
-            "Combo": self.combo_widgets(row),
-            "Scroll": self.scroll_widgets(row),
-            "Text": self.text_widgets(row),
-            "Keywords": self.keywords_widgets(row),
-            "Wait": self.wait_widgets(row)
-        }
-        # Add the widgets for the selected action type to the row
-        self.add_widgets(row, widgets[action_type])
+        # Get the action type from the action type dropdown widget in the first column
+        action_type_widget = self.table.cellWidget(row, 0)
+        action_type = action_type_widget.currentText() if action_type_widget is not None and isinstance(action_type_widget, QComboBox) else "Clic"  
 
+        # Get the widgets for the selected action type and update the row with them
+        widgets = self.get_widgets_for_action_type(action_type, row)
+        self.add_widgets(row, widgets)  
 
 
     def add_widgets(self, row, widget_list):
-        # This method adds widgets to a row of the table
-        # The widget_list argument is a list of widgets, one for each column in the row
+        # Add each widget in the list to the cells in the given row
         for col, widget in enumerate(widget_list):
-            if widget is None:
-                # If the widget is None, add an empty QLabel instead
-                self.table.setCellWidget(row, col + 1, QLabel(""))
-
-            else:
-                # Otherwise, add the widget to the cell in the table
-                self.table.setCellWidget(row, col + 1, widget)
-
-
-    def add_row(self):
-        # Generate a new unique row ID
-        row_id = uuid.uuid4()
-        self.row_ids.add(row_id)
-
-        # Add a new row to the script table
-        row = self.table.rowCount()
-        self.table.setRowCount(row + 1)
-
-        # Create a dropdown widget to select the action type for the new row and add it to the table
-        action_type_dropdown = QComboBox()
-        action_type_dropdown.addItems(["Clic", "Double clic","Move", "Press", "Combo", "Scroll", "Text", "Keywords","Wait"])
-        self.table.setCellWidget(row, 0, action_type_dropdown)
-        action_type_dropdown.currentIndexChanged.connect(lambda: self.update_row_widgets(row))
-
-
-        # Create a button widget to delete the new row and add it to the table
-        delete_button = QPushButton("-")
-        delete_button.row_id = row_id
-        delete_button.clicked.connect(lambda: self.delete_row(row_id))
-        self.table.setCellWidget(row, 5, delete_button)
-
-        # Create a button widget to insert a new row below the new row and add it to the table
-        add_button = QPushButton("+")
-        add_button.clicked.connect(lambda: self.add_row())
-        self.table.setCellWidget(row, 6, add_button)
-
-        # Update the widget options for the new row based on the selected action type
-        self.update_row_widgets(row)
-
+            # If the widget is None, add an empty QLabel instead
+            self.table.setCellWidget(row, col + 1, widget if widget is not None else QLabel(""))    
 
 
     def delete_row(self, row_id):
-        # Find the row with the given ID
-        for row in range(self.table.rowCount()):
-            if self.table.cellWidget(row, 5).row_id == row_id:
-                break   
+        # Find the row with the specified row_id and remove it from the table
+        row = next((row for row in range(self.table.rowCount()) if self.table.cellWidget(row, 5).row_id == row_id), None)
+        if row is not None:
+            self.table.removeRow(row)
+            self.row_ids.remove(row_id) 
 
-        # Remove the row from the script table
-        self.table.removeRow(row)   
 
-        # Remove the row ID from the set of row IDs
-        self.row_ids.remove(row_id) 
 
 
 #____ ____ _  _ ____    ____ ____    _    ____ ____ ___  
@@ -619,10 +660,10 @@ class DarthBMO(QMainWindow):
                     row = self.table.rowCount() - 1
     
                     # Set the action type for the new row
-                    action_type_dropdown = self.table.cellWidget(row, 0)
-                    index = action_type_dropdown.findText(action_type)
+                    self.action_type_dropdown = self.table.cellWidget(row, 0)
+                    index = self.action_type_dropdown.findText(action_type)
                     if index >= 0:
-                        action_type_dropdown.setCurrentIndex(index)
+                        self.action_type_dropdown.setCurrentIndex(index)
     
                     # Set the values for each column in the new row
                     for col, value in enumerate(row_data[1:]):
@@ -649,24 +690,22 @@ class DarthBMO(QMainWindow):
                                            
     
     def launch_script(self):
+
         with Listener(on_press=self.on_key_press) as listener:
             mouse_controller = MouseController()
-            keyboard_controller = KeyboardController()
-    
-            # Determine the number of iterations to perform based on the user input
-            # If the loop checkbox is not checked, use the value of the loop spinbox
-            # Otherwise, loop indefinitely
-            loop_count = self.loop_spinbox.value() if not self.loop_checkbox.isChecked() else float('inf')
-            iteration = 0
+            keyboard_controller = KeyboardController()  
 
-            #Add a random delay if wanted
+            # Determine the number of iterations to perform based on the user input
+            loop_count = self.loop_spinbox.value() if not self.loop_checkbox.isChecked() else float('inf')
+            iteration = 0   
+
+            # Add a random delay if wanted
             def get_random_delay(delay):
                 if self.random_checkbox.isChecked():
                     random_frames = random.randint(0, self.random_spinbox.value())
                     return delay + random_frames / 60  # convert frames in 60fps
                 else:
-                    return delay
-                
+                    return delay    
 
             # Perform the script for the specified number of iterations or until the stop button is pressed
             while iteration < loop_count and not self.stop_script:
@@ -674,168 +713,215 @@ class DarthBMO(QMainWindow):
                     # Iterate over each row in the table and perform the corresponding action
                     for row in range(self.table.rowCount()):
                         if self.stop_script:
-                            break
-                        mouse_controller = MouseController()
-                        keyboard_controller = KeyboardController()
-    
+                            break   
+
                         # Determine the action to perform based on the user input
                         action_type = self.table.cellWidget(row, 0).currentText()
-                        delay = get_random_delay(self.table.cellWidget(row, 4).value())
-    
+                        delay = get_random_delay(self.table.cellWidget(row, 4).value()) 
+
                         # If the action is a click or double click, determine the coordinates of the click
                         if action_type in ["Clic", "Double clic"]:
                             x = int(self.table.cellWidget(row, 1).text())
                             y = int(self.table.cellWidget(row, 2).text())
-                            mouse_controller.position = (x, y)
-    
-                        #Left click one time in a range of time according to the delay
+                            mouse_controller.position = (x, y)  
+
+
+
+
+                        # Perform left click action
                         if action_type == "Clic":
-                            mouse_controller.click(Button.left, 1)
-                            time.sleep(delay)
+                            try:
+                                mouse_controller.click(Button.left, 1)
+                            except Exception as e:
+                                self.logger.exception(f"Error in 'Clic' action:  {e}\n\n Thanks to share the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
+                                self.logger.show_error(None, f"Error in 'Clic' action: {e} \n\n Please save the commands and share it with the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
 
-                        #Left click twice
+                            time.sleep(delay)   
+
+
+
+
+                        # Perform double click action
                         elif action_type == "Double clic":
-                            mouse_controller.click(Button.left, 2)
-                            time.sleep(delay)
+                            try:
+                                mouse_controller.click(Button.left, 2)
+                            except Exception as e:
+                                self.logger.exception(f"Error in 'Double Clic' action:  {e}\n\n Thanks to share the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
+                                self.logger.show_error(None, f"Error in 'Double Clic' action: {e} \n\n Please save the commands and share it with the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
+
+                            time.sleep(delay)   
 
 
+
+
+
+                        # Perform key press action
                         elif action_type == "Press":
-                            # Determine the key to press and the number of times to press it
-                            key_name = self.table.cellWidget(row, 1).currentText()
-                            key = getattr(Key, key_name)
-                            count = self.table.cellWidget(row, 2).value()
-    
-                            # Press and release the key the specified number of times
-                            for _ in range(count):
-                                keyboard_controller.press(key)
-                                keyboard_controller.release(key)
+                            try:
+                                key_name = self.table.cellWidget(row, 1).currentText()
+                                key = getattr(Key, key_name)
+                                count = self.table.cellWidget(row, 2).value()   
 
-                                time.sleep(delay)
+                                # Press and release the key the specified number of times
+                                for _ in range(count):
+                                    keyboard_controller.press(key)
+                                    keyboard_controller.release(key)
+                            except Exception as e:
+                                self.logger.exception(f"Error in 'Press' action:  {e}\n\n Thanks to share the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
+                                self.logger.show_error(None, f"Error in 'Press' action: {e} \n\n Please save the commands and share it with the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
+
+                            time.sleep(delay)   
 
 
-                
+
+
+
+                        # Perform mouse move action
                         elif action_type == "Move":
-                            # Get the x and y coordinates from the table
-                            x = int(self.table.cellWidget(row, 1).text())
-                            y = int(self.table.cellWidget(row, 2).text())
+                            try:
+                                x = int(self.table.cellWidget(row, 1).text())
+                                y = int(self.table.cellWidget(row, 2).text())
+                                mouse_controller.position = (x, y)
+                            except Exception as e:
+                                self.logger.exception(f"Error in 'Move' action:  {e}\n\n Thanks to share the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
+                                self.logger.show_error(None, f"Error in 'Move' action: {e} \n\n Please save the commands and share it with the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
 
-                            # Move the mouse to the specified coordinates
-                            self.mouse_controller.position = (x, y)
-
-                            time.sleep(delay)
+                            time.sleep(delay)   
 
 
 
+
+
+                        # Perform combo key press action
                         elif action_type == "Combo":
-                            # Determine the keys to press for the combo action
-                            combo_text = self.table.cellWidget(row, 1).currentText()
-                            extra_key1_name = self.table.cellWidget(row, 2).currentText()
-                            extra_key2_name = self.table.cellWidget(row, 3).currentText()
-    
-                            combo_keys = self.string_to_keys(combo_text)
-                            extra_key1 = self.string_to_keys(extra_key1_name)
-                            extra_key2 = self.string_to_keys(extra_key2_name)
-    
-                            keys_to_press = combo_keys + extra_key1 + extra_key2
-    
-                            # Press and release the keys in the correct order
-                            for key in keys_to_press:
-                                keyboard_controller.press(key)
-                            time.sleep(0.1)
-                            for key in reversed(keys_to_press):
-                                keyboard_controller.release(key)
+                            try:
+                                combo_text = self.table.cellWidget(row, 1).currentText()
+                                extra_key1_name = self.table.cellWidget(row, 2).currentText()
+                                extra_key2_name = self.table.cellWidget(row, 3).currentText()   
+
+                                combo_keys = self.string_to_keys(combo_text)
+                                extra_key1 = self.string_to_keys(extra_key1_name)    
+                                extra_key2 = self.string_to_keys(extra_key2_name)
+
+                                keys_to_press = combo_keys + extra_key1 + extra_key2
+
+                                # Press and release the keys in the correct order
+                                for key in keys_to_press:
+                                    keyboard_controller.press(key)
+                                time.sleep(0.1)
+
+                                for key in reversed(keys_to_press):
+                                    keyboard_controller.release(key)
+                            except Exception as e:
+                                self.logger.exception(f"Error in 'Combo' action:  {e}\n\n Thanks to share the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
+                                self.logger.show_error(None, f"Error in 'Combo' action: {e} \n\n Please save the commands and share it with the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
+
                             time.sleep(delay)
 
 
 
+
+
+                        # Perform scroll action
                         elif action_type == "Scroll":
-                            # Get the values for positive and negative scroll amounts from the table
-                            scroll_amount_positive = self.table.cellWidget(row, 1).value()
-                            scroll_amount_negative = self.table.cellWidget(row, 2).value()
+                            try:
+                                scroll_amount_positive = self.table.cellWidget(row, 1).value()
+                                scroll_amount_negative = self.table.cellWidget(row, 2).value()
+                                scroll_amount = scroll_amount_positive + scroll_amount_negative
 
-                            # Calculate the total scroll amount
-                            scroll_amount = scroll_amount_positive + scroll_amount_negative 
-
-                            # If the scroll amount is positive, scroll up for that many steps
-                            if scroll_amount > 0:
-                                for _ in range(scroll_amount):
-                                    self.mouse_controller.scroll(0, 1)
-
-                            # If the scroll amount is negative, scroll down for that many steps
-                            else:
-                                for _ in range(abs(scroll_amount)):
-                                    self.mouse_controller.scroll(0, -1) 
+                                if scroll_amount > 0:
+                                    for _ in range(scroll_amount):
+                                        mouse_controller.scroll(0, 1)
+                                else:
+                                    for _ in range(abs(scroll_amount)):
+                                        mouse_controller.scroll(0, -1)
+                            except Exception as e:
+                                self.logger.exception(f"Error in 'Scroll' action:  {e}\n\n Thanks to share the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
+                                self.logger.show_error(None, f"Error in 'Scroll' action: {e} \n\n Please save the commands and share it with the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
 
                             time.sleep(delay)
 
-                        
 
+
+
+
+                        # Perform text typing action
                         elif action_type == "Text":
-                            # Type the specified text
-                            text = self.table.cellWidget(row, 2).text()
-                            keyboard_controller.type(text)
+                            try:
+                                text = self.table.cellWidget(row, 2).text()
+                                keyboard_controller.type(text)
+                            except Exception as e:
+                                self.logger.exception(f"Error in 'Text' action:  {e}\n\n Thanks to share the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
+                                self.logger.show_error(None, f"Error in 'Text' action: {e} \n\n Please save the commands and share it with the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
+                            
                             time.sleep(delay)
-    
 
 
+
+
+
+
+                        # Perform keywords typing action
                         elif action_type == "Keywords":
-                            # Get the text of the keywords to type from the table
-                            keywords_text = self.table.cellWidget(row, 2).text()                        
+                            try:
+                                keywords_text = self.table.cellWidget(row, 2).text()
+                                separator_widget = self.table.cellWidget(row, 1)
+                                if isinstance(separator_widget, QComboBox):
+                                    separator = separator_widget.currentText()
+                                else:
+                                    separator = ","
 
-                            # Get the separator widget and current separator text
-                            separator_widget = self.table.cellWidget(row, 1)
-                            if isinstance(separator_widget, QComboBox):
-                                separator = separator_widget.currentText()
-                            else:
-                                separator = ","                     
+                                if separator == "Enter":
+                                    keywords_text = keywords_text.replace(",", "\n")
+                                else:
+                                    keywords_text = keywords_text.replace(",", separator.strip())
 
-                            # Replace the comma separator in the keywords text with the chosen separator
-                            if separator == "Enter":
-                                keywords_text = keywords_text.replace(',', '\n')
-                            else:
-                                keywords_text = keywords_text.replace(',', separator)                       
+                                keywords = keywords_text.split(separator)
 
+                                for i, keyword in enumerate(keywords):
+                                    keyword = keyword.strip()
 
-                            # Split the keywords text using the separator and type each keyword
-                            keywords = keywords_text.split(separator)
-                        
-                            for i, keyword in enumerate(keywords):
-                                keyword = keyword.strip() # Remove any leading or trailing whitespace
-                        
-                                if keyword:
-                                    keyboard_controller.type(keyword) # Type the keyword
-                                    # Type the separator if there are more keywords to type
-                                    if i < len(keywords) - 1:
-                                        if separator != "\n":
-                                            # Type the separator character
-                                            with keyboard_controller.pressed(Key.shift):
-                                                keyboard_controller.press(separator)
-                                                keyboard_controller.release(separator)
-                                        else:
-                                            # If the separator is the newline character, press the enter key instead
-                                            keyboard_controller.press(Key.enter)
-                                            keyboard_controller.release(Key.enter)
-                        
-                                # Add a delay to give time for the typing action to be completed
-                                time.sleep(delay)
-                        
-                        
+                                    if keyword:
+                                        keyboard_controller.type(keyword)
+                                        if i < len(keywords) - 1:
+                                            if separator != "\n":
+                                                if separator == ",":
+                                                    keyboard_controller.press(separator)
+                                                    keyboard_controller.release(separator)
+                                                else:
+                                                    with keyboard_controller.pressed(Key.shift):
+                                                        keyboard_controller.press(separator)
+                                                        keyboard_controller.release(separator)
+                                            else:
+                                                keyboard_controller.press(Key.enter)
+                                                keyboard_controller.release(Key.enter)
+                            except Exception as e:
+                                self.logger.exception(f"Error in 'Keywords' action:  {e}\n\n Thanks to share the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
+                                self.logger.show_error(None, f"Error in 'Keywords' action: {e} \n\n Please save the commands and share it with the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
+
+                            time.sleep(delay)
 
 
+
+
+                        # Perform wait action
                         elif action_type == "Wait":
                             time.sleep(delay)
-            
-    
+
+
                 # Catch any exceptions that occur during script execution and print an error message
                 except Exception as e:
-                    print(f"Error : {e}")
-    
+                    self.logger.exception(f"Critical error:  {e}\n\n Thanks to share the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
+                    self.logger.show_error(None, f"Critical error: {e} \n\n Please save the commands and share it with the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
+
+                
                 # Release all keyboard keys at the end of each iteration
                 finally:
                     for key in Key:
                         keyboard_controller.release(key)
-    
+
                     iteration += 1
+                    return
 
 
 
@@ -850,30 +936,36 @@ class DarthBMO(QMainWindow):
     def GUI(self):
         self.setWindowTitle("🥺 Lemme do it 4 U 🥺")
 
-        main_widget = QWidget()
-        self.setCentralWidget(main_widget)
-        self.setGeometry(100, 100, 720, 360)
+        self.main_widget = QWidget()
+        self.setCentralWidget(self.main_widget)
 
 
         #The button of the app
 
-        btn_save_script = QPushButton("SAVE")
-        btn_save_script.clicked.connect(self.save_script)
+        self.btn_save_script = QPushButton("SAVE")
+        self.btn_save_script.clicked.connect(self.save_script)
+        self.btn_save_script.setToolTip("Save the current tables")
 
-        btn_load_script = QPushButton("RELOAD")
-        btn_load_script.clicked.connect(self.load_script)
+        self.btn_load_script = QPushButton("RELOAD")
+        self.btn_load_script.clicked.connect(self.load_script)
+        self.btn_load_script.setToolTip("Add an old table to the current one")
+
 
         self.table = QTableWidget()
         self.table.setColumnCount(7)
         self.table.setHorizontalHeaderLabels(["Type", "Action", "Text", "Position", "Delay", "Delete", "Add"])
 
-        btn_add_row = QPushButton("+")
-        btn_add_row.clicked.connect(self.add_row)
+        self.btn_add_row = QPushButton("ADD A NEW ROW IN TABLE")
+        self.btn_add_row.clicked.connect(self.add_row)
+        self.btn_add_row.setToolTip("Add new row")
 
-
-        self.time_machine_checkbox = QCheckBox("Time machine modulator")
-        self.time_machine_spinbox = QSpinBox()
+        for i in range(1):
+           self.add_row()
         
+        self.time_machine_checkbox = QCheckBox("Time machine modulator")
+        self.time_machine_checkbox.setToolTip("Change the time delay for all tables.")
+        self.time_machine_spinbox = QSpinBox()
+        self.time_machine_spinbox.setToolTip("Change the time delay for all tables.")
 
         # Set the range of the time machine spin box to 1-1000
         self.time_machine_spinbox.setRange(1, 1000)
@@ -887,64 +979,71 @@ class DarthBMO(QMainWindow):
         self.time_machine_spinbox.valueChanged.connect(lambda value: self.toggle_time_machine(Qt.Checked if self.time_machine_checkbox.isChecked() else Qt.Unchecked))
 
 
-        btn_sacrifice = QPushButton("Sacrifice all")
-        btn_sacrifice.clicked.connect(self.clear_table)
+        self.btn_sacrifice = QPushButton("Sacrifice all")
+        self.btn_sacrifice.clicked.connect(self.clear_table)
+        self.btn_sacrifice.setToolTip("Delete all tables")
 
         self.loop_checkbox = QCheckBox("Reach Infinity > F8 < to exit, or loop")
+        self.loop_checkbox.setToolTip("Replay the loop until end of time")
 
         self.loop_spinbox = QSpinBox()
+        self.loop_spinbox.setToolTip("Choose a number of loopings")
         self.loop_spinbox.setRange(1, 999999999)
         self.loop_spinbox.setValue(1)
 
+
         self.random_checkbox = QCheckBox("Nanosecond entropy injector")
+        self.random_checkbox.setToolTip("Add random time delay between each action")
         self.random_spinbox = QSpinBox()
-        self.random_spinbox.setRange(0, 999999999)  # Mettez ici la plage de valeurs souhaitée pour les frames
+        self.random_spinbox.setRange(0, 999999999)
         self.random_spinbox.setValue(0)
+        self.random_spinbox.setToolTip("Add random time delay between each action")
 
 
-        launch_script_button = QPushButton("F I N I S H   H I T !")
-        launch_script_button.clicked.connect(self.launch_script_thread)
+        self.launch_script_button = QPushButton("F I N I S H   H I T !")
+        self.launch_script_button.clicked.connect(self.launch_script_thread)
+        self.launch_script_button.setToolTip("FATALITY")
 
 
         # Layout instructions
-        Vlay_BMO = QVBoxLayout()
-        Hlay_BMO = QHBoxLayout()
-        Hlay_live_or_die = QHBoxLayout()
-        Hlay_BMO_loop = QHBoxLayout()
-        Hlay_BMO_time_machine = QHBoxLayout()
-        Hlay_random_delay = QHBoxLayout()
+        self.Vlay_BMO = QVBoxLayout()
+        self.Hlay_BMO = QHBoxLayout()
+        self.Hlay_live_or_die = QHBoxLayout()
+        self.Hlay_BMO_loop = QHBoxLayout()
+        self.Hlay_BMO_time_machine = QHBoxLayout()
+        self.Hlay_random_delay = QHBoxLayout()
 
-        main_widget.setLayout(Vlay_BMO)
+        self.main_widget.setLayout(self.Vlay_BMO)
 
-        Vlay_BMO.addLayout(Hlay_BMO)
-        Hlay_BMO.addWidget(btn_save_script)
-        Hlay_BMO.addWidget(btn_load_script)
+        self.Vlay_BMO.addLayout(self.Hlay_BMO)
+        self.Hlay_BMO.addWidget(self.btn_save_script)
+        self.Hlay_BMO.addWidget(self.btn_load_script)
 
-        Vlay_BMO.addWidget(self.table)
+        self.Vlay_BMO.addWidget(self.table)
 
-        Vlay_BMO.addLayout(Hlay_live_or_die)
-        Hlay_live_or_die.addWidget(btn_add_row)
-        Hlay_live_or_die.addWidget(btn_sacrifice)
+        self.Vlay_BMO.addLayout(self.Hlay_live_or_die)
+        self.Hlay_live_or_die.addWidget(self.btn_add_row)
+        self.Hlay_live_or_die.addWidget(self.btn_sacrifice)
 
-        Vlay_BMO.addSpacing(10)
-        Vlay_BMO.addLayout(Hlay_BMO_time_machine)
-        Hlay_BMO_time_machine.addWidget(self.time_machine_checkbox)
-        Hlay_BMO_time_machine.addWidget(self.time_machine_spinbox)
+        self.Vlay_BMO.addSpacing(10)
+        self.Vlay_BMO.addLayout(self.Hlay_BMO_time_machine)
+        self.Hlay_BMO_time_machine.addWidget(self.time_machine_checkbox)
+        self.Hlay_BMO_time_machine.addWidget(self.time_machine_spinbox)
 
 
-        Vlay_BMO.addSpacing(10)
-        Vlay_BMO.addLayout(Hlay_BMO_loop)
-        Hlay_BMO_loop.addWidget(self.loop_checkbox)
-        Hlay_BMO_loop.addWidget(self.loop_spinbox)
-        Hlay_BMO_loop.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum))
+        self.Vlay_BMO.addSpacing(10)
+        self.Vlay_BMO.addLayout(self.Hlay_BMO_loop)
+        self.Hlay_BMO_loop.addWidget(self.loop_checkbox)
+        self.Hlay_BMO_loop.addWidget(self.loop_spinbox)
+        self.Hlay_BMO_loop.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum))
 
-        Vlay_BMO.addSpacing(10)
-        Vlay_BMO.addLayout(Hlay_random_delay)
-        Hlay_random_delay.addWidget(self.random_checkbox)
-        Hlay_random_delay.addWidget(self.random_spinbox)
+        self.Vlay_BMO.addSpacing(10)
+        self.Vlay_BMO.addLayout(self.Hlay_random_delay)
+        self.Hlay_random_delay.addWidget(self.random_checkbox)
+        self.Hlay_random_delay.addWidget(self.random_spinbox)
 
-        Vlay_BMO.addSpacing(20)
-        Vlay_BMO.addWidget(launch_script_button)
+        self.Vlay_BMO.addSpacing(20)
+        self.Vlay_BMO.addWidget(self.launch_script_button)
 
 
 
