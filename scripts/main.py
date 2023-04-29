@@ -115,8 +115,9 @@
 import sys
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget, QVBoxLayout, QAction,  QMenu, QDialog, QLabel, QVBoxLayout,QTextEdit
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget, QVBoxLayout, QAction,  QMenu, QDialog, QLabel, QVBoxLayout,QTextEdit,QPushButton
 from PyQt5.QtGui import QIcon
+
 from recorder import Recorder
 from tables import DarthBMO
 from overlay import layer0 as Overlay
@@ -143,7 +144,7 @@ class windowCeption(cypunk1Window):
     def __init__(self):
         super().__init__(
             title="Lemme do it",
-            window_size="758x400",
+            window_size="777x400",
             btn_minimize="ico/hide.png",
             btn_show="ico/open.png",
             stylesheet_path= None
@@ -257,16 +258,39 @@ class MainWindow(QMainWindow):
             self.tabs.removeTab(self.tabs.indexOf(self.overlay_tab))
     
 
+
     def about_dialog(self):
         # Open a dialog box showing information about the program
         self.about_dial = QDialog(self)
         self.about_dial.setWindowTitle("About")
         self.about_dial.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
 
-        self.about_dial_label = QLabel("GitHub : <a href='https://github.com/SECRET-GUEST/autoclicker'>SECRET-GUEST/autoclicker</a>", self.about_dial )
+        about_text = (
+"Apologies for any false 'malware' alerts that may have been triggered. "
+"The licensing cost for this software is $500 for 6 months, which is why it hasn't been acquired yet.<br><br>"
+"Remember that software is free and was initially developed for personal use.<br>"
+"I am now sharing it with others aims to help those in search of a good solution.<br>"
+"Feel free to follow the project and contribute at: <br><br>"
+"<a href='https://github.com/SECRET-GUEST/autoclicker'>SECRET-GUEST/autoclicker</a><br><br>"
+"Please note that this version might not be completely stable and could occasionally crash. "
+"Nevertheless, its features should work well for most users. Testing it on every machine isn't feasible, "
+"so if an issue arises, kindly report it at: <br><br>"
+"<a href='https://github.com/SECRET-GUEST/autoclicker/issues'>Report an issue on SECRET-GUEST/autoclicker</a><br><br>"
+"Every effort will be made to address reported issues. Thank you."
+
+        )
+
+        self.about_dial_label = QLabel(about_text, self.about_dial)
         self.about_dial_label.setOpenExternalLinks(True)
+        self.about_dial_label.setTextFormat(Qt.RichText)
+        self.about_dial_label.setWordWrap(True)
+
+        self.close_button = QPushButton("Close", self.about_dial)
+        self.close_button.clicked.connect(self.about_dial.close)
+
         self.Vlay_about = QVBoxLayout(self.about_dial)
         self.Vlay_about.addWidget(self.about_dial_label)
+        self.Vlay_about.addWidget(self.close_button)
         self.about_dial.exec_()
 
 
