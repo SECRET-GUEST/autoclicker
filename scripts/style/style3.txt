@@ -5,6 +5,7 @@
     font-size: 20px;
     font-weight: bold;
     color: #4CE0B3;
+    font-family: "Silkscreen"
 }
 
 
@@ -130,7 +131,7 @@ QTextEdit {
     background-color: #FF8E72;
     color: #4CE0B3;
     border-radius: 10px;
-    font-family: "Ink Free"
+    font-family: "Cascadia Code"
 }
 
 

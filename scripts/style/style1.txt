@@ -5,6 +5,7 @@
     font-size: 20px;
     font-weight: bold;
     color: #ffffff;
+    font-family: "Silkscreen"
 }
 
 /* Personnalisation de la bordure extérieure */
@@ -130,7 +131,7 @@ QTextEdit {
     background-color: #b1a7a6;
     color: #e5383b;
     border-radius: 10px;
-    font-family: "Ink Free"
+    font-family: "Cascadia Code"
 }
 
 

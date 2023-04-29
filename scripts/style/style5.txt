@@ -5,6 +5,7 @@
     font-size: 20px;
     font-weight: bold;
     color: #ffffff;
+    font-family: "Silkscreen"
 }
 
 QMainWindow {
@@ -126,7 +127,7 @@ QTextEdit {
     background-color: #fcf6bd;
     color: #ff99c8;
     border-radius: 10px;
-    font-family: "Ink Free"
+    font-family: "Cascadia Code"
 }
 
 
