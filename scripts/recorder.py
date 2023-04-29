@@ -119,7 +119,7 @@
 
 import sys, time
 
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QSlider, QHBoxLayout, QLabel, QTextEdit
+from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QSlider, QHBoxLayout, QLabel, QTextEdit
 from PyQt5.QtCore import Qt
 from PyQt5 import QtGui
 
@@ -292,10 +292,8 @@ class HardWorkingBruh(QWidget):
 
 
 
-
 # Function to replay recorded events
     def play_events(self):
-
         try:
             self.log_message("Read events")
 
@@ -319,51 +317,57 @@ class HardWorkingBruh(QWidget):
                     if not self.repeating:
                         break
 
-                    # If the event is a mouse click
-                    if event[0] == 'click':
-                        _, _, x, y, button, pressed = event
+                    try:
+                        # If the event is a mouse click
+                        if event[0] == 'click':
+                            _, _, x, y, button, pressed = event
 
-                        # Move the cursor to the position (x, y)
-                        mouse.Controller().position = (x, y)
-                        # If the button is pressed, press the mouse button
-                        if pressed:
-                            mouse.Controller().press(button)
-                        # Otherwise, release the mouse button
-                        else:
-                            mouse.Controller().release(button)
+                            # Move the cursor to the position (x, y)
+                            mouse.Controller().position = (x, y)
+                            # If the button is pressed, press the mouse button
+                            if pressed:
+                                mouse.Controller().press(button)
+                            # Otherwise, release the mouse button
+                            else:
+                                mouse.Controller().release(button)
 
-                    # If the event is a scroll event
-                    elif event[0] == 'scroll' :
-                        _, _, x, y, dx, dy = event
+                        # If the event is a scroll event
+                        elif event[0] == 'scroll':
+                            _, _, x, y, dx, dy = event
 
-                        mouse.Controller().position = (x, y)
-                        mouse.Controller().scroll(dx, dy)
+                            mouse.Controller().position = (x, y)
+                            mouse.Controller().scroll(dx, dy)
 
-                    # If the event is a keyboard event
-                    elif event[0] == 'key':
-                        _, _, key, pressed, modifiers = event
+                        # If the event is a keyboard event
+                        elif event[0] == 'key':
+                            _, _, key, pressed, modifiers = event
 
-                        # If the key is pressed, press the modifier keys and the main key
-                        if pressed:
-                            for modifier, is_pressed in modifiers.items():
-                                if is_pressed:
-                                    keyboard.Controller().press(getattr(keyboard.Key, modifier))
+                            # If the key is pressed, press the modifier keys and the main key
+                            if pressed:
+                                for modifier, is_pressed in modifiers.items():
+                                    if is_pressed:
+                                        keyboard.Controller().press(getattr(keyboard.Key, modifier))
 
-                            keyboard.Controller().press(key)
+                                keyboard.Controller().press(key)
 
-                        # Otherwise, release the modifier keys and the main key
-                        else:
-                            keyboard.Controller().release(key)
+                            # Otherwise, release the modifier keys and the main key
+                            else:
+                                keyboard.Controller().release(key)
 
-                            for modifier, is_pressed in modifiers.items():
-                                if is_pressed:
-                                    keyboard.Controller().release(getattr(keyboard.Key, modifier))
+                                for modifier, is_pressed in modifiers.items():
+                                    if is_pressed:
+                                        keyboard.Controller().release(getattr(keyboard.Key, modifier))
+
+                    except Exception as e:
+                        self.logger.exception(f"Error while processing event:  {e}\n\n Thanks to share the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
+                        self.logger.show_error(None, f"Error while processing event: {e} \n\n Please save the commands and share it with the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
 
                     # Add a delay between events based on the slider value
                     time.sleep(delay)
 
         except Exception as e:
-            print(f"Error : {e}")
+                    self.logger.exception(f"Critical error:  {e}\n\n Thanks to share the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
+                    self.logger.show_error(None, f"Critical error: {e} \n\n Please save the commands and share it with the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
 
         finally:
             # Release all keys and mouse buttons
@@ -379,6 +383,7 @@ class HardWorkingBruh(QWidget):
 
 
 
+
 #____ ____ ____ ___  _  _ _ ____ ____ _       _  _ ____ ____ ____    _ _  _ ___ ____ ____ ____ ____ ____ ____ 
 #| __ |__/ |__| |__] |__| | |    |__| |       |  | [__  |___ |__/    | |\ |  |  |___ |__/ |___ |__| |    |___ 
 #|__] |  \ |  | |    |  | | |___ |  | |___    |__| ___] |___ |  \    | | \|  |  |___ |  \ |    |  | |___ |___ 
@@ -388,20 +393,22 @@ class HardWorkingBruh(QWidget):
         self.setWindowTitle('Hard working Bruh')
 
         # UI buttons
-        btn_start = QPushButton('START RECORDING (F7)', self)
-        btn_start.clicked.connect(self.start_recording)
+        self.btn_start = QPushButton('START RECORDING (F7)', self)
+        self.btn_start.clicked.connect(self.start_recording)
 
-        btn_stop = QPushButton('STOP RECORDING (F7)', self)
-        btn_stop.clicked.connect(self.stop_recording)
+        self.btn_stop = QPushButton('STOP RECORDING (F7)', self)
+        self.btn_stop.clicked.connect(self.stop_recording)
 
-        btn_play = QPushButton('PLAY', self)
-        btn_play.clicked.connect(self.play_events)
+        self.btn_play = QPushButton('PLAY', self)
+        self.btn_play.clicked.connect(self.play_events)
 
-        btn_stop_loop = QPushButton('STOP LOOP (F8)', self)
-        btn_stop_loop.clicked.connect(self.stop_loop)
+        self.btn_stop_loop = QPushButton('STOP LOOP (F8)', self)
+        self.btn_stop_loop.clicked.connect(self.stop_loop)
 
-        btn_reset = QPushButton('RESET ALL EVENTS', self)
-        btn_reset.clicked.connect(self.reset_events)
+        self.btn_reset = QPushButton('RESET ALL EVENTS', self)
+        self.btn_reset.clicked.connect(self.reset_events)
+        self.btn_reset.setToolTip("reset all events")
+
 
         # Create a horizontal slider with a range from 0 to 100
         self.speeder = QSlider(Qt.Horizontal)
@@ -410,9 +417,9 @@ class HardWorkingBruh(QWidget):
         self.speeder.setValue(50)
 
         # Create labels for the slider
-        lab_speeder = QLabel('SPEED')
-        lab_min = QLabel('-')
-        lab_max = QLabel('+')
+        self.lab_speeder = QLabel('SPEED')
+        self.lab_min = QLabel('-')
+        self.lab_max = QLabel('+')
 
         # Display the label defining the actions
         self.on_air = QTextEdit(self,objectName="TextEdit")
@@ -420,24 +427,24 @@ class HardWorkingBruh(QWidget):
         self.on_air.setReadOnly(True)
 
         # Create a horizontal layout for the slider and labels
-        h_lay_ac = QHBoxLayout()
-        h_lay_ac.addWidget(lab_min)
-        h_lay_ac.addWidget(self.speeder)
-        h_lay_ac.addWidget(lab_max)
+        self.h_lay_ac = QHBoxLayout()
+        self.h_lay_ac.addWidget(self.lab_min)
+        self.h_lay_ac.addWidget(self.speeder)
+        self.h_lay_ac.addWidget(self.lab_max)
 
         # Create a vertical layout for the buttons, slider and label
-        v_lay_ac = QVBoxLayout()
-        v_lay_ac.addWidget(btn_start)
-        v_lay_ac.addWidget(btn_stop)
-        v_lay_ac.addWidget(btn_play)
-        v_lay_ac.addWidget(btn_stop_loop)
-        v_lay_ac.addWidget(btn_reset)
-        v_lay_ac.addWidget(lab_speeder)
-        v_lay_ac.addLayout(h_lay_ac)
-        v_lay_ac.addWidget(self.on_air)
+        self.v_lay_ac = QVBoxLayout()
+        self.v_lay_ac.addWidget(self.btn_start)
+        self.v_lay_ac.addWidget(self.btn_stop)
+        self.v_lay_ac.addWidget(self.btn_play)
+        self.v_lay_ac.addWidget(self.btn_stop_loop)
+        self.v_lay_ac.addWidget(self.btn_reset)
+        self.v_lay_ac.addWidget(self.lab_speeder)
+        self.v_lay_ac.addLayout(self.h_lay_ac)
+        self.v_lay_ac.addWidget(self.on_air)
 
         # Apply the vertical layout
-        self.setLayout(v_lay_ac)
+        self.setLayout(self.v_lay_ac)
 
     #    self.show()
 

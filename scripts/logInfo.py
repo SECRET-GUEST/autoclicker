@@ -124,7 +124,6 @@ class logz(logging.Logger):
     def __init__(self, name, level=logging.NOTSET):
         super().__init__(name, level)
 
-
     @classmethod
     def configLogs(cls, logger_name, log_file, use_qt_dialogs=False):
         # Configure the logger with the given logger name and log file
@@ -271,20 +270,22 @@ class logz(logging.Logger):
         for window in windows:
             self.update_theme(window, theme)
 
-
     def change_theme(self, mainWindow, theme_changed_signal=None):
         # show the theme selector dialog box
         theme_selector = ThemeSelector(mainWindow, self)
-    
+
         # connect the theme_selector's theme_selected signal to the lambda function
         theme_selector.theme_selected.connect(lambda selected_theme: self.apply_theme_to_all_windows(selected_theme, mainWindow))
-    
+
         # connect the theme_changed_signal to the theme_selector's theme_selected signal
         if theme_changed_signal is not None:
             theme_selector.theme_selected.connect(theme_changed_signal.theme_changed)
-    
-        theme_selector.exec_()
-    
+
+        result = theme_selector.exec_()
+        if result == QDialog.Accepted:
+            selected_theme = theme_selector.selected_theme
+            self.save_config(selected_theme)
+
 
     def initialize_theme(self, mainWindow, windowCeption=None):
         # load the last-used theme from the config file
@@ -292,7 +293,6 @@ class logz(logging.Logger):
 
         # update the theme for both windows
         self.apply_theme_to_all_windows(last_theme, mainWindow, windowCeption)  
-
 
 
     class ThemeChangedSignal(QObject): #Emit signal for the title bar

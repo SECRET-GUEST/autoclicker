@@ -111,20 +111,18 @@
 #| |\ | [__   |  |__| |    |    |__|  |  | |  | |\ |
 #| | \| ___]  |  |  | |___ |___ |  |  |  | |__| | \|
         
-import sys, ctypes
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget,
+import ctypes
+from PyQt5.QtWidgets import ( QMainWindow, QPushButton, QVBoxLayout, QWidget,
                              QFileDialog, QGraphicsOpacityEffect, QLabel, QSlider, QSpinBox,
                              QGridLayout, QDialog)
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap,QIcon
 from PyQt5.QtCore import Qt, QSize
 
 #___  ____ _ _ _ ____ ____    ___  _    ____ _  _ ___
 #|__] |  | | | | |___ |__/    |__] |    |__| |\ |  |
 #|    |__| |_|_| |___ |  \    |    |___ |  | | \|  |
                 
-
 #OPENING | https://www.youtube.com/watch?v=_85LaeTCtV8 :3
-
 
 
 #_  _ ____ _ _  _    ____ _    ____ ____ ____ 
@@ -160,6 +158,7 @@ class layer0(QMainWindow):
         self.opacity_slider = QSlider(Qt.Horizontal)
         self.opacity_slider.valueChanged.connect(self.change_opacity)
         self.opacity_slider.hide()
+        self.opacity_slider.setToolTip("manage opacity")
 
         self.close_image_button = QPushButton("Close Image")
         self.close_image_button.clicked.connect(self.close_image)
@@ -184,17 +183,24 @@ class layer0(QMainWindow):
 
 # Upload an image and display it in a separate window
     def upload_image(self):
-        if not self.image_window:
-            file_name, _ = QFileDialog.getOpenFileName(self, "Open Image", "", "Images (*.png *.xpm *.jpg *.bmp)")
-    
-            if file_name:
-                pixmap = QPixmap(file_name)
-                self.image_window = layer1(self.logger, pixmap, pixmap) # Added self.logger and pixmap as arguments
-                self.image_window.show()
-                self.config_button.show()
-                self.close_image_button.show()
-                self.opacity_slider.show()
-    
+        try : 
+            if not self.image_window:
+                file_name, _ = QFileDialog.getOpenFileName(self, "Open Image", "", "Images (*.png *.xpm *.jpg *.bmp)")
+
+                if file_name:
+                    pixmap = QPixmap(file_name)
+                    self.image_window = layer1(self.logger, pixmap, pixmap) # Added self.logger and pixmap as arguments
+                    self.image_window.show()
+                    self.config_button.show()
+                    self.close_image_button.show()
+                    self.opacity_slider.show()
+        except Exception as e:
+                    self.logger.exception(f"This picture is a problem : {e}")
+                    self.logger.show_error(None, f"This picture is a problem :  {e}")
+
+        finally:
+            return
+        
 
 # Close the image window
     def close_image(self):
@@ -241,7 +247,6 @@ class layer1(QWidget):
 
         #Error handler 
         self.logger = logger
-
         self.setWindowTitle("Settings")
         self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint | Qt.WindowTransparentForInput)
         self.setAttribute(Qt.WA_TranslucentBackground, True)
@@ -254,9 +259,9 @@ class layer1(QWidget):
         self.label.setScaledContents(True)
 
         # Set layout
-        layout = QVBoxLayout()
-        layout.addWidget(self.label)
-        self.setLayout(layout)
+        self.Vlay_layer1 = QVBoxLayout()
+        self.Vlay_layer1.addWidget(self.label)
+        self.setLayout(self.Vlay_layer1)
 
         self.resize(pixmap.size())
 
@@ -311,15 +316,26 @@ class layer1(QWidget):
 
 
 class layer_config(QDialog):
-    def __init__(self,logger, image_window):
+    def __init__(self, logger, image_window, theme=None): #TODO: change this method to make the code easier to reuse ###############################################
         super().__init__()
-        
+        self.setWindowIcon(QIcon())
         # Hide context help button
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint | Qt.WindowStaysOnTopHint)
-        
-        #Error handler 
+
+        # Error handler
         self.logger = logger
 
+        self.setWindowIcon(QIcon(self.logger.ressource_path(r"ico\autoclicker.png")))
+##################################################################################
+        # Apply the chosen theme
+        if theme is not None:
+            self.logger.update_theme(self, theme)
+        else:
+            # If no theme is provided, use the default theme from the config file
+            last_theme = self.logger.load_config()
+            self.logger.update_theme(self, last_theme)
+###################################################################################
+        
         self.setWindowTitle("Configure Image")
         self.image_window = image_window
 
@@ -343,26 +359,34 @@ class layer_config(QDialog):
         self.y_spinbox.valueChanged.connect(self.change_image_position)
 
         # Set layout
-        self.layout = QGridLayout()
+        self.Vlay_config = QGridLayout()
 
         # Set to the first row and spanning two columns
-        self.layout.addWidget(self.resize_label, 0, 0, 1, 2)
-        self.layout.addWidget(self.resize_slider, 1, 0, 1, 2)
+        self.Vlay_config.addWidget(self.resize_label, 0, 0, 1, 2)
+        self.Vlay_config.addWidget(self.resize_slider, 1, 0, 1, 2)
 
         # Set to the 4th row and first column
-        self.layout.addWidget(self.x_label, 2, 0)
-        self.layout.addWidget(self.x_spinbox, 3, 0)
-        self.layout.addWidget(self.y_label, 2, 1)
-        self.layout.addWidget(self.y_spinbox, 3, 1)
+        self.Vlay_config.addWidget(self.x_label, 2, 0)
+        self.Vlay_config.addWidget(self.x_spinbox, 3, 0)
+        self.Vlay_config.addWidget(self.y_label, 2, 1)
+        self.Vlay_config.addWidget(self.y_spinbox, 3, 1)
 
-        self.setLayout(self.layout)
+        self.setLayout(self.Vlay_config)
 
 
     # Change image size based on the slider value
     def change_image_size(self, value):
-        if self.image_window:
-            self.image_window.resize_image(value)
+        try :    
+            if self.image_window:
+                self.image_window.resize_image(value)
 
+        except Exception as e:
+                    self.logger.exception(f"The image was too big : {e}")
+                    self.logger.show_error(None, f"The image was too big : {e}")
+
+        finally:
+            return
+        
     # Change image position based on the spinbox values
     def change_image_position(self):
         if self.image_window:

@@ -14,6 +14,7 @@ class FreeWill(QMessageBox):
         self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         self.setDefaultButton(QMessageBox.No)
         self.action = action
+        self.setWindowIcon(QIcon())
 
     def exec_and_call_action(self):
         result = self.exec_()
@@ -39,6 +40,7 @@ class tripleChoice(QMessageBox):
         self.action_yes = action_yes
         self.action_no = action_no
         self.custom_action = custom_action
+        self.setWindowIcon(QIcon())
 
 
     def exec_and_call_actions(self):
@@ -61,11 +63,15 @@ class tripleChoice(QMessageBox):
 
 # Theme configuration
 class ThemeSelector(QDialog):
+
     theme_selected = pyqtSignal(int)  # signal to refresh themes on title bar
 
     def __init__(self, parent=None, logger=None):
         super().__init__(parent)
+        self.setWindowIcon(QIcon())
+        
         self.logger = logger
+        self.selected_theme = None
 
         self.setWindowTitle("Themes")
 
@@ -76,6 +82,7 @@ class ThemeSelector(QDialog):
 
 
     def on_theme_button_clicked(self, theme_id):
+        self.selected_theme = theme_id
         self.theme_selected.emit(theme_id)
         self.accept()
 

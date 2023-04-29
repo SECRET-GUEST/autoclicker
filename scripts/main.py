@@ -115,36 +115,41 @@
 import sys
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget, QVBoxLayout, QAction,  QMenu, QLabel, QVBoxLayout,QTextEdit
-
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget, QVBoxLayout, QAction,  QMenu, QDialog, QLabel, QVBoxLayout,QTextEdit
+from PyQt5.QtGui import QIcon
 from recorder import Recorder
 from tables import DarthBMO
 from overlay import layer0 as Overlay
 from zoom_handler import enable_zoom
 from logInfo import logz
 
-from cypunk1 import cypunk1Window,Cypunk1Dialog
+from cypunk1 import cypunk1Window
 
 #___  ____ _ _ _ ____ ____    ___  _    ____ _  _ ___
 #|__] |  | | | | |___ |__/    |__] |    |__| |\ |  |
 #|    |__| |_|_| |___ |  \    |    |___ |  | | \|  |
                 
 
+
 #OPENING | https://www.youtube.com/watch?v=_85LaeTCtV8 :3
+
+logger = None #To use Logger in all applications
 
 
 # Faster to integrate with this window's inception method 
 # TODO : rework.class windowCeption(cypunk1Window) to integrate the 2nd main window
 
 class windowCeption(cypunk1Window):
-    def __init__(self, logger=None):
+    def __init__(self):
         super().__init__(
-            title="Lemme do it 4 U 🥺",
+            title="Lemme do it",
             window_size="758x400",
-            btn_minimize="ico/open.png",
-            btn_show="ico/hide.png"
+            btn_minimize="ico/hide.png",
+            btn_show="ico/open.png",
+            stylesheet_path= None
         )
-
+        
+        global logger
         # If logger is provided, use it, otherwise create a new logz object with the specified settings
         self.logger = logger or logz.configLogs("Autoclicker", "ERRORS.log", use_qt_dialogs=True)
 
@@ -169,14 +174,13 @@ class windowCeption(cypunk1Window):
         self.overlay = Overlay(self.logger)
 
         # Put the main app in the custom window represented by this class
-        Vlay = QVBoxLayout()
-        stylesheet_path = logz.ressource_path("style/style1.txt")
-        main_page = MainWindow(parent=self, cypunk1window=self, stylesheet_path=stylesheet_path)
-        main_page.set_overlay(self.overlay)
-        Vlay.addSpacing(28)
-        Vlay.addWidget(main_page)
+        self.Vlay = QVBoxLayout()
+        self.main_page = MainWindow(parent=self)
+        self.main_page.set_overlay(self.overlay)
+        self.Vlay.addSpacing(28)
+        self.Vlay.addWidget(self.main_page)
 
-        self.central_widget.setLayout(Vlay)
+        self.central_widget.setLayout(self.Vlay)
 
     # Update themes
     def update_theme_slot(self, theme):
@@ -185,11 +189,8 @@ class windowCeption(cypunk1Window):
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, parent=None,cypunk1window=None,stylesheet_path=None):
+    def __init__(self, parent=None):
         super().__init__(parent)
-
-        self.cypunk1window = cypunk1window
-        self.stylesheet_path = stylesheet_path
 
         # Set the logger, overlay, and tables attributes from the parent window
         self.logger = parent.logger
@@ -206,6 +207,7 @@ class MainWindow(QMainWindow):
         # Enable zooming for this window
         enable_zoom(self)
 
+        self.setWindowIcon(QIcon(self.logger.ressource_path(r"ico\autoclicker.png")))
         # Initialize user interface
         self.GUI()
 
@@ -256,27 +258,28 @@ class MainWindow(QMainWindow):
             self.tabs.removeTab(self.tabs.indexOf(self.overlay_tab))
     
 
-    def create_dialog(self, title):
-        dialog = Cypunk1Dialog(self, stylesheet_path=self.stylesheet_path)
-        dialog.setWindowTitle(title)
-        return dialog
-
-
     def about_dialog(self):
-        self.about_dial = self.cypunk1window.create_dialog("About")
+        # Open a dialog box showing information about the program
+        self.about_dial = QDialog(self)
+        self.about_dial.setWindowTitle("About")
         self.about_dial.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
 
         self.about_dial_label = QLabel("GitHub : <a href='https://github.com/SECRET-GUEST/autoclicker'>SECRET-GUEST/autoclicker</a>", self.about_dial )
         self.about_dial_label.setOpenExternalLinks(True)
         self.Vlay_about = QVBoxLayout(self.about_dial)
         self.Vlay_about.addWidget(self.about_dial_label)
+        self.about_dial.exec_()
+
+
 
     def help_dialog(self):
         # Read the Markdown file
         with open(self.logger.ressource_path('README.md'), 'r', encoding='utf-8') as file:
             md_content = file.read()
 
-        self.help_dial = self.cypunk1window.create_dialog("Help")
+        # Display the plain text content in a QDialog
+        self.help_dial = QDialog(self)
+        self.help_dial.setWindowTitle("Help")
         self.help_dial.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
 
         self.text_view = QTextEdit(self.help_dial)
@@ -284,6 +287,7 @@ class MainWindow(QMainWindow):
         self.text_view.setReadOnly(True)
         self.Vlay_help = QVBoxLayout(self.help_dial)
         self.Vlay_help.addWidget(self.text_view)
+        self.help_dial.exec_()
 
 
 #____ ____ ____ ___  _  _ _ ____ ____ _       _  _ ____ ____ ____    _ _  _ ___ ____ ____ ____ ____ ____ ____ 
