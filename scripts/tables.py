@@ -197,9 +197,6 @@ class DarthBMO(QMainWindow):
 
 
 
-
-
-
 #Function to move the mouse without clicking
     def move_widgets(self, row):
         # Create line edits for x and y coordinates, a button to record the position, and a delay spinbox
@@ -475,7 +472,6 @@ class DarthBMO(QMainWindow):
     
 
 
-
 #____ ____ _ _ _    ____ ____ ___ _ ____ _  _ ____ 
 #|__/ |  | | | |    |__| |     |  | |  | |\ | [__  
 #|  \ |__| |_|_|    |  | |___  |  | |__| | \| ___] 
@@ -484,43 +480,98 @@ class DarthBMO(QMainWindow):
     def add_row(self):
         # Get the current number of rows in the table
         row = self.table.rowCount()
-        # Call _add_or_insert_row to add a new row at the end of the table
-        self._add_or_insert_row(row)
+        # Call add_or_insert_row to add a new row at the end of the table
+        self.add_or_insert_row(row)
+
+
 
 
     def insert_row(self, row):
-        # Call _add_or_insert_row to insert a new row below the specified row
-        self._add_or_insert_row(row + 1)
+       # Call add_or_insert_row to insert a new row below the specified row
+       self.add_or_insert_row(row + 1)
+       
+       # Update the row attribute of add buttons in the rows below the newly inserted row
+       for r in range(row + 2, self.table.rowCount()):
+           add_button = self.table.cellWidget(r, 6)
+           if add_button is not None and isinstance(add_button, QPushButton):
+               add_button.row = r
 
 
-    def _add_or_insert_row(self, row):
+
+
+    def add_or_insert_row(self, row, skip_update=False):
         # Generate a new unique row ID
         row_id = uuid.uuid4()
         # Add the row ID to the set of row IDs
-        self.row_ids.add(row_id)
-    
+        self.row_ids.add(row_id)    
+
         # Insert a new row into the table at the specified position
-        self.table.insertRow(row)
-    
+        self.table.insertRow(row)   
+
         # Create a dropdown widget to select the action type for the new row
         action_type_dropdown = self._create_action_type_dropdown(row)
         # Set the cell widget for the action type dropdown
-        self.table.setCellWidget(row, 0, action_type_dropdown)
-    
-        # Create widgets for the selected action type and add them to the row
-        widgets = self.get_widgets_for_action_type(action_type_dropdown.currentText(), row)
-        self.add_widgets(row, widgets)
-    
+        self.table.setCellWidget(row, 0, action_type_dropdown)  
+
+        if not skip_update:
+            # Create widgets for the selected action type and add them to the row
+            widgets = self.get_widgets_for_action_type(action_type_dropdown.currentText(), row)
+            self.add_widgets(row, widgets)  
+
         # Create a button widget to delete the new row and add it to the table
         delete_button = self._create_delete_button(row_id)
-        self.table.setCellWidget(row, 5, delete_button)
-    
+        self.table.setCellWidget(row, 5, delete_button) 
+
         # Create a button widget to insert a new row below the new row and add it to the table
         add_button = self._create_add_button(row)
-        self.table.setCellWidget(row, 6, add_button)
-    
+        self.table.setCellWidget(row, 6, add_button)    
+
         # Use QTimer to defer the execution of update_row_widgets
-        QTimer.singleShot(0, lambda: self.update_row_widgets(row))
+        if not skip_update:
+            QTimer.singleShot(0, lambda: self.update_row_widgets(row))  
+
+        # If it's not the first row, copy the previous row's widgets
+        if row > 0 and not skip_update:
+            self.initialize_row(row - 1, row)
+
+
+
+
+    def initialize_row(self, src_row, dest_row):
+        # Iterate through columns 1 to 4
+        for col in range(1, 5):  
+            # Get widget from corresponding cell of source row
+            src_widget = self.table.cellWidget(src_row, col)    
+
+            # Create a new widget based on the type of the source widget
+            if src_widget is None:
+                # Create new empty QLabel if widget doesn't exist
+                new_widget = QLabel("")
+
+            elif isinstance(src_widget, QLineEdit):
+                # Create new QLineEdit with same text as source widget
+                new_widget = QLineEdit(src_widget.text())
+
+            elif isinstance(src_widget, QComboBox):
+                new_widget = QComboBox()
+                new_widget.addItems([src_widget.itemText(i) for i in range(src_widget.count())])
+                new_widget.setCurrentText(src_widget.currentText())
+
+            elif isinstance(src_widget, QSpinBox):
+                new_widget = QSpinBox()
+                new_widget.setValue(src_widget.value())
+
+            elif isinstance(src_widget, QDoubleSpinBox):
+                new_widget = QDoubleSpinBox()
+                new_widget.setValue(src_widget.value())
+
+            else:
+                # Create new empty QLabel if widget is of none of the above types
+                new_widget = QLabel("") 
+
+            # Place the new widget in the corresponding cell of the destination row
+            self.table.setCellWidget(dest_row, col, new_widget) 
+
 
 
 
@@ -528,20 +579,29 @@ class DarthBMO(QMainWindow):
     def _create_action_type_dropdown(self, row):
         # Create a dropdown widget for selecting action type
         action_type_dropdown = QComboBox()
+
         # Add available action types to the dropdown
         action_type_dropdown.addItems(["Clic", "Double clic", "Move", "Press", "Combo", "Scroll", "Text", "Keywords", "Wait"])
+
         # Connect the currentIndexChanged signal to update the widgets for the row when the action type is changed
         action_type_dropdown.currentIndexChanged.connect(partial(self.update_row_widgets, row))
         return action_type_dropdown
 
+
+
+
     def _create_delete_button(self, row_id):
         # Create a button widget to delete the row
         delete_button = QPushButton("-")
+
         # Add the row ID as an attribute to the button so it can be identified when clicked
         delete_button.row_id = row_id
         # Connect the button clicked signal to the delete_row method with the row ID as argument
         delete_button.clicked.connect(lambda: self.delete_row(row_id))
         return delete_button
+
+
+
 
     def _create_add_button(self, row):
         # Create a button widget to insert a new row below the current row
@@ -551,6 +611,8 @@ class DarthBMO(QMainWindow):
         # Connect the button clicked signal to the insert_row method with the row number as argument
         add_button.clicked.connect(lambda: self.insert_row(add_button.row))
         return add_button
+
+
 
     def get_widgets_for_action_type(self, action_type, row):
         # Map the available action types to their corresponding widget functions
@@ -656,10 +718,10 @@ class DarthBMO(QMainWindow):
                     row_data = line.strip().split("|")
                     action_type = row_data[0]
     
-                    # Add a new row to the table
-                    self.add_row()
+                    # Add a new row to the table without resetting widgets
+                    self.add_or_insert_row(row=self.table.rowCount(), skip_update=True)
                     row = self.table.rowCount() - 1
-    
+
                     # Set the action type for the new row
                     self.action_type_dropdown = self.table.cellWidget(row, 0)
                     index = self.action_type_dropdown.findText(action_type)
