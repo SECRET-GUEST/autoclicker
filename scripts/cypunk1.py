@@ -270,31 +270,45 @@ class cypunk1Window(QMainWindow):
         self.close_button = QPushButton(self.title_bar)  # create close button
         self.close_button.setGeometry(width - 30 - 8, 15, 20, 20)  # Place it 8 px before the hexagonal mask
         self.close_button.setStyleSheet("QPushButton {"
-                                         "background-color: red;"
+                                         "background-color: #D00000;"
                                          "border: none;"
                                          "width: 20px;"
                                          "height: 10px;"
                                          "}"
                                          "QPushButton:hover {"
-                                         "background-color: darkred;"
+                                         "background-color: #DC2F02;"
                                          "}")
         self.close_button.clicked.connect(self.close_application)
 
 
-        # The close button inside the window
-        self.micromize_button = QPushButton(self.title_bar)  # create close button
-        self.micromize_button.setGeometry(width - 60 - 8, 5, 20, 20)  # Place it 8 px before the hexagonal mask
+#        # Maximize button
+#        self.maximize_button = QPushButton(self.title_bar) 
+#        self.maximize_button.setGeometry(width - 60 - 8, 5, 20, 20) 
+#        self.maximize_button.setStyleSheet("QPushButton {"
+#                                         "background-color: #E85D04;"
+#                                         "border: none;"
+#                                         "width: 20px;"
+#                                         "height: 10px;"
+#                                         "}"
+#                                         "QPushButton:hover {"
+#                                         "background-color: #F48C06;"
+#                                         "}")
+#        self.maximize_button.clicked.connect(self.showMaximized)
+
+
+        # Minimize button
+        self.micromize_button = QPushButton(self.title_bar) 
+        self.micromize_button.setGeometry(width - 60 - 8, 5, 20, 20) #Replace 60 by 90 iff you're using maximization
         self.micromize_button.setStyleSheet("QPushButton {"
-                                         "background-color: orange;"
+                                         "background-color: #FFBA08;"
                                          "border: none;"
                                          "width: 20px;"
                                          "height: 10px;"
                                          "}"
                                          "QPushButton:hover {"
-                                         "background-color: darkorange;"
+                                         "background-color: #FAA307;"
                                          "}")
         self.micromize_button.clicked.connect(self.showMinimized)
-
 
 
 
@@ -326,11 +340,15 @@ class cypunk1Window(QMainWindow):
 
         # move the close button widget with the window
         new_pos = self.mapToGlobal(QPoint(self.width() - 30, 5))
-        # Adjust the position of the close button
-        self.micromize_button.move(self.width() - 60 - 8, 5)
+
+        # Adjust the position of the close/max/min button
         self.close_button.move(self.width() - 30 - 8, 5)
+#        self.maximize_button.move(self.width() - 60 - 8, 5)
+        self.micromize_button.move(self.width() - 60 - 8, 5) #Replace 60 by 90 iff you're using maximization
+
         self.title_bar.setGeometry(0, 0, self.width(), 30)  # set geometry for title bar widget
         self.central_widget.setGeometry(0, 0, self.width(), self.height())  # update central widget geometry
+
         self.set_hexagon_shape()  # update hexagon shape
         self.frameGeometry().setWidth(self.width())  # update frame geometry width
         self.frameGeometry().setHeight(self.height())  # update frame geometry height
@@ -383,21 +401,22 @@ class cypunk1Window(QMainWindow):
 
     def toggle_window(self):
         if self.central_widget.isVisible():  # check if central widget is visible
-            # hide central widget, title label, and close button widget
+            # hide central widget, title label, buttons close max min
             self.central_widget.hide()
             self.title_label.hide()
             self.close_button.hide()
             self.micromize_button.hide()
+#            self.maximize_button.hide()
             self.hide_button.setIcon(self.show_icon)  # set icon for minimize button to show icon
 
         else:
-            # show central widget, title label, and close button widget
+            # Show all
             self.close_button.show()
             self.central_widget.show()
             self.title_label.show()
             self.micromize_button.show()
-            self.hide_button.setIcon(self.minimize_icon)  # set icon for minimize button to minimize icon
-
+#            self.maximize_button.show()
+            self.hide_button.setIcon(self.minimize_icon) 
 
 
 

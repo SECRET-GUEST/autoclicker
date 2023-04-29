@@ -215,9 +215,9 @@ class logz(logging.Logger):
         if 'Settings' not in config.sections():
             config.add_section('Settings')
 
-        # If 'last_theme' does not exist in the 'Settings' section, set it to 1 and write it to the configuration file
+        # If 'last_theme' does not exist in the 'Settings' section, set it to 5 and write it to the configuration file
         if 'last_theme' not in config['Settings']:
-            config.set('Settings', 'last_theme', '1')
+            config.set('Settings', 'last_theme', '5')
             with open('config.ini', 'w') as configfile:
                 config.write(configfile)
 

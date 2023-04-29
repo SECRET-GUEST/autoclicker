@@ -195,8 +195,8 @@ class layer0(QMainWindow):
                     self.close_image_button.show()
                     self.opacity_slider.show()
         except Exception as e:
-                    self.logger.exception(f"This picture is a problem : {e}")
-                    self.logger.show_error(None, f"This picture is a problem :  {e}")
+                    self.logger.exception(f"This picture is a problem : {e}\n\n\n\n")
+                    self.logger.show_error(None, f"This picture is a problem :  {e}\n\n\n\n")
 
         finally:
             return
@@ -381,8 +381,8 @@ class layer_config(QDialog):
                 self.image_window.resize_image(value)
 
         except Exception as e:
-                    self.logger.exception(f"The image was too big : {e}")
-                    self.logger.show_error(None, f"The image was too big : {e}")
+                    self.logger.exception(f"The image was too big : {e}\n\n\n\n")
+                    self.logger.show_error(None, f"The image was too big : {e}\n\n\n\n")
 
         finally:
             return

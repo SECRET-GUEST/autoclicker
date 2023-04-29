@@ -148,7 +148,6 @@ class windowCeption(cypunk1Window):
             btn_show="ico/open.png",
             stylesheet_path= None
         )
-        
         global logger
         # If logger is provided, use it, otherwise create a new logz object with the specified settings
         self.logger = logger or logz.configLogs("Autoclicker", "ERRORS.log", use_qt_dialogs=True)

@@ -359,15 +359,15 @@ class HardWorkingBruh(QWidget):
                                         keyboard.Controller().release(getattr(keyboard.Key, modifier))
 
                     except Exception as e:
-                        self.logger.exception(f"Error while processing event:  {e}\n\n Thanks to share the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
-                        self.logger.show_error(None, f"Error while processing event: {e} \n\n Please save the commands and share it with the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
+                        self.logger.exception(f"Error while processing event:  {e}\n\n Thanks to share the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues \n\n\n\n")
+                        self.logger.show_error(None, f"Error while processing event: {e} \n\n Please save the commands and share it with the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues \n\n\n\n")
 
                     # Add a delay between events based on the slider value
                     time.sleep(delay)
 
         except Exception as e:
-                    self.logger.exception(f"Critical error:  {e}\n\n Thanks to share the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
-                    self.logger.show_error(None, f"Critical error: {e} \n\n Please save the commands and share it with the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues")
+                    self.logger.exception(f"Critical error:  {e}\n\n Thanks to share the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues \n\n\n\n")
+                    self.logger.show_error(None, f"Critical error: {e} \n\n Please save the commands and share it with the error here :\n\n https://github.com/SECRET-GUEST/autoclicker/issues \n\n\n\n")
 
         finally:
             # Release all keys and mouse buttons
