@@ -112,7 +112,7 @@
 #| | \| ___]  |  |  | |___ |___ |  |  |  | |__| | \|
         
 import os,sys
-from PyQt5.QtWidgets import QMainWindow,QApplication, QWidget, QPushButton, QFrame, QLabel, QMessageBox, QVBoxLayout, QSizeGrip,QRubberBand
+from PyQt5.QtWidgets import QMainWindow, QWidget, QPushButton, QFrame, QLabel, QMessageBox, QVBoxLayout, QSizeGrip,QRubberBand
 from PyQt5.QtGui import QIcon, QPainterPath, QRegion, QPainter, QPainterPath, QPalette
 from PyQt5.QtCore import Qt, QPoint, QSize,pyqtSignal
 

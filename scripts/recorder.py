@@ -117,7 +117,7 @@
 #| | \| ___]  |  |  | |___ |___ |  |  |  | |__| | \|
          
 
-import sys, time
+import time
 
 from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QSlider, QHBoxLayout, QLabel, QTextEdit
 from PyQt5.QtCore import Qt

@@ -5,9 +5,7 @@ TUTORIEL
 
 - Zoom : You can use ctrl + /- or scroll to zoom the whole app.
 
-- You can resize window with dragging the right downside corner.
-
-- 
+- You can resize window by dragging the right downs ide corner.
 
 
 
