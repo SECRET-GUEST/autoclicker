@@ -30,7 +30,7 @@
 
 ## Common issues :
 
-:black_small_square: Problems on tables with adding row , ... [Almost done]
+:black_small_square: Last issue to fix before the release : Reload script who reload badly for some reason
 
 ![image](https://user-images.githubusercontent.com/92639080/234765247-d34deb5b-b194-4b2c-bbcc-aa918d9fcc1a.png)
 
@@ -86,10 +86,6 @@ The **overlay** can **display an image** **front of all** where you can **click 
 
 Once the **image** is set, you can change its **opacity** or use the configure section to **resize** the **picture** , or give it a **position** .
 
-
-### :pirate_flag: Hidden features
-
-Click on the weird logo and see (don't worry I don't give a *F* of your datas).
 
 ![1](https://user-images.githubusercontent.com/92639080/234941989-ea5814ea-3a2a-4d49-913c-5621eb4e9416.png)
 
