@@ -30,16 +30,7 @@
 
 ## Common issues :
 
-:black_small_square: Use recorder + tables at same time will result to a crash. I'm working on the logger.
-
-:black_small_square: Sacrifice button will not advertise you if you're sure.
-
-:black_small_square: No errors messages if the app crash .
-
-:black_small_square: Problem with left click turning into right click sometimes for unknown reason.
-
-:black_small_square: Troubles using `,` for new separators in keyword feature.
-
+:black_small_square: Problems on tables with adding row , ... [Almost done]
 
 ![image](https://user-images.githubusercontent.com/92639080/234765247-d34deb5b-b194-4b2c-bbcc-aa918d9fcc1a.png)
 
