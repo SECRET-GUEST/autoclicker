@@ -13,7 +13,7 @@
 ![PyQt5](https://img.shields.io/badge/GUI-PyQt5-green)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow)
 
-![5](https://user-images.githubusercontent.com/92639080/234941921-0068ef8c-ff9f-44eb-90f7-c382955a3086.png)
+![zoom](https://user-images.githubusercontent.com/92639080/235331879-6a4b4e03-b851-446b-85f1-4c9915a2ccf5.png)
 
 
 ## Description :
@@ -26,7 +26,7 @@
 - Overlay that you can also find alone in here : https://github.com/SECRET-GUEST/Layer-one
 - Multiples themes 
 
-![4](https://user-images.githubusercontent.com/92639080/234941881-0069b75d-89e6-4b2c-ba6e-47357a6fe738.png)
+![tables](https://user-images.githubusercontent.com/92639080/235331886-699d0376-17d8-4508-957a-5aebf4b718c1.png)
 
 ## TODO (me or contributors) :
 - Improve theme to resized window on every sides.
@@ -37,8 +37,8 @@
 - Add new function to make a plugin working with selenium to do stuff in the browser without using the clickbot.
 - Improve the theme logic to let the code be more reusable for all new function with a better pop up system.
 
-![image](https://user-images.githubusercontent.com/92639080/234765247-d34deb5b-b194-4b2c-bbcc-aa918d9fcc1a.png)
 
+![recorder](https://user-images.githubusercontent.com/92639080/235331888-6edd0d0a-57db-4f2c-9323-d61f75651ed7.png)
 
 
 ## Usage / features : 
@@ -92,7 +92,7 @@ The **overlay** can **display an image** **front of all** where you can **click 
 Once the **image** is set, you can change its **opacity** or use the configure section to **resize** the **picture** , or give it a **position** .
 
 
-![1](https://user-images.githubusercontent.com/92639080/234941989-ea5814ea-3a2a-4d49-913c-5621eb4e9416.png)
+![themes](https://user-images.githubusercontent.com/92639080/235331896-ecc934d6-3291-436d-8522-0237791772d3.png)
 
 
 ## :scroll: License
@@ -102,6 +102,9 @@ This repository is released under the [MIT License](LICENSE). Please see the `LI
 ## :question: Support & Questions
 
 If you have any questions or need support, please feel free to open an issue or join my twitter.
+
+
+![overlay](https://user-images.githubusercontent.com/92639080/235331898-c3e847a6-fa03-46c9-b79b-c3eceee2ca39.png)
 
 
 ```
