@@ -135,7 +135,7 @@ python script.pyw
 
 # :desktop_computer: For **Microsoft** users:
 
-Because this script is made by PyInstaller, it could be detected as malware. (sorry, but I will not spend money to just be approved by "security" software/websites, you have the code, and here are possibilities to help you run it:
+Because this script is made by PyInstaller without a $500 licence "signature", it could be flagged as malware. (sorry, but I will not spend money to just be approved by "security" software/websites, you have the code, and here are possibilities to help you run it:
 
 ## :large_orange_diamond: 1. Run by simple click on `APPLICATION.exe`
 
