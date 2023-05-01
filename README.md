@@ -132,10 +132,6 @@ python script.pyw
 ```
 (where `script.pyw` is obviously the name of the file you've downloaded)
 
-
-![3](https://user-images.githubusercontent.com/92639080/234942256-9e5f7ce0-17f6-4978-9c49-ee7641c52d2d.png)
-
-
 # :desktop_computer: For **Microsoft** users:
 
 Because this script is made by PyInstaller, it could be detected as malware. (sorry, but I will not spend money to just be approved by "security" software/websites, you have the code, and here are possibilities to help you run it:
