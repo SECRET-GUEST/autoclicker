@@ -29,7 +29,7 @@
 ![tables](https://user-images.githubusercontent.com/92639080/235331886-699d0376-17d8-4508-957a-5aebf4b718c1.png)
 
 ## TODO (me or contributors) :
-- Improve load and regresh method in row actions to avoid errors of importation
+- Improve load and refresh method in row actions to avoid errors of importation
 - Improve theme to resize window on every sides.
 - Add a music system that user could load, mute / change volume working during the bot is running with a default one.
 - Add a "G A M E  O V E R" pop up when the script is entirely done.
