@@ -20,7 +20,7 @@
 
 **HardWorkingBruh** is a powerful and versatile tool designed to streamline your repetitive tasks and actions on your computer. Say hello to your new bruh for automating tasks and making your life easier! **HardWorkingBruh**  is here to boost your productivity and take care of your **repetitive tasks** . Perfect for **gamers** , **coders** , or anyone looking to save time on **everyday tasks** . With its powerful tables, flexible recording, and handy **overlay** features, this **autoclicker** is the ultimate companion for all your clicking needs. Whether it's **pixel wars**, **keyword lists**, or just a **quick combo press**, this bruh's got your back!
 
-###### Note: It's possible that you encounter issues with the execution of large scripts, do not hesitate to slow down a little the delays, or to add `wait` between each rows.
+###### Note: It's possible that you encounter issues with the execution of large scripts, do not hesitate to add more delays, or to add `wait` between each rows.
 
 ## news :
 - Tables to set the autoclicker manually
