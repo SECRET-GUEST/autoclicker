@@ -1,3 +1,6 @@
+# Here an example how to make a very basic msi installer fow windows os with cxFreeze
+# I'm not using it but I'm sharing if you would like to learn.
+
 import sys
 import os
 from cx_Freeze import setup, Executable
