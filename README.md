@@ -23,23 +23,13 @@
 ###### Note: It's possible that you encounter issues with the execution of large scripts, do not hesitate to add more delays, or to add `wait` between each rows.
 
 
-# :gem: Recommendations  
-
-Enjoying the efficiency of our AutoClicker? You might also appreciate these tools:
-
-- [Silence](https://github.com/SECRET-GUEST/silence) : A Python tool that swiftly removes all comments from a page.
-- [Decimator](https://github.com/SECRET-GUEST/decimator) : An efficient file remover, deleting all files with the same name within a selected folder, including subfolders.
-- [How Many Books Have I Written As A Developer](https://github.com/SECRET-GUEST/How-Many-Books-Have-I-Written-As-A-Developer) : Track how many lines you've written as a developer. 
-
-Looking for more? Discover user-friendly, GUI-free scripts here: 
-- [Tiny Scripts](https://github.com/SECRET-GUEST/tiny-scripts)
-
 
 ## news :
 - Tables to set the autoclicker manually
 - Upload commands for table in a text file that you can manually rewrite easily with a text editor (here for example : https://github.com/SECRET-GUEST/ecrire )
 - Overlay that you can also find alone in here : https://github.com/SECRET-GUEST/Layer-one
 - Multiples themes 
+
 
 ![tables](https://user-images.githubusercontent.com/92639080/235331886-699d0376-17d8-4508-957a-5aebf4b718c1.png)
 
@@ -52,7 +42,17 @@ Looking for more? Discover user-friendly, GUI-free scripts here:
 - Add new function to make a plugin working with selenium to do stuff in the browser without using the clickbot.
 - Improve the theme logic to let the code be more reusable for all new function with a better pop up system.
 
+# :gem: Recommendations  
 
+If you're seeking more tools to boost your productivity, consider exploring these repositories:
+
+- [Silence](https://github.com/SECRET-GUEST/silence) : A Python tool that swiftly removes all comments from a page.
+- [Decimator](https://github.com/SECRET-GUEST/decimator) : An efficient file remover, deleting all files with the same name within a selected folder, including subfolders.
+- [How Many Books Have I Written As A Developer](https://github.com/SECRET-GUEST/How-Many-Books-Have-I-Written-As-A-Developer) : Track how many lines you've written as a developer. 
+
+Looking for more? Discover user-friendly, GUI-free scripts here: 
+- [Tiny Scripts](https://github.com/SECRET-GUEST/tiny-scripts)
+  
 ![recorder](https://user-images.githubusercontent.com/92639080/235331888-6edd0d0a-57db-4f2c-9323-d61f75651ed7.png)
 
 
