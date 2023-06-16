@@ -22,6 +22,19 @@
 
 ###### Note: It's possible that you encounter issues with the execution of large scripts, do not hesitate to add more delays, or to add `wait` between each rows.
 
+
+# :gem: Recommendations  
+
+Enjoying the efficiency of our AutoClicker? You might also appreciate these tools:
+
+- [Silence](https://github.com/SECRET-GUEST/silence) : A Python tool that swiftly removes all comments from a page.
+- [Decimator](https://github.com/SECRET-GUEST/decimator) : An efficient file remover, deleting all files with the same name within a selected folder, including subfolders.
+- [How Many Books Have I Written As A Developer](https://github.com/SECRET-GUEST/How-Many-Books-Have-I-Written-As-A-Developer) : Track how many lines you've written as a developer. 
+
+Looking for more? Discover user-friendly, GUI-free scripts here: 
+- [Tiny Scripts](https://github.com/SECRET-GUEST/tiny-scripts)
+
+
 ## news :
 - Tables to set the autoclicker manually
 - Upload commands for table in a text file that you can manually rewrite easily with a text editor (here for example : https://github.com/SECRET-GUEST/ecrire )
