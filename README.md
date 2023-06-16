@@ -45,10 +45,6 @@ If you're seeking more tools to boost your productivity, consider exploring thes
 Looking for more? Discover user-friendly, GUI-free scripts here: 
 - [Tiny Scripts](https://github.com/SECRET-GUEST/tiny-scripts)
   
-![recorder](https://user-images.githubusercontent.com/92639080/235331888-6edd0d0a-57db-4f2c-9323-d61f75651ed7.png)
-
-
-
 
 ## TODO (me or contributors) :
 - Improve theme to resize window on every sides and display pop ups correctly with the pop up system (cypunk1.py, infoLog.py, msgBox.py)
@@ -59,6 +55,7 @@ Looking for more? Discover user-friendly, GUI-free scripts here:
 - Add new function to make a plugin working with selenium to do stuff in the browser without using the clickbot.
 - Improve the theme logic to let the code be more reusable for all new function with a better pop up system.
 
+![recorder](https://user-images.githubusercontent.com/92639080/235331888-6edd0d0a-57db-4f2c-9323-d61f75651ed7.png)
 
 ## Usage / features : 
 
