@@ -33,14 +33,6 @@
 
 ![tables](https://user-images.githubusercontent.com/92639080/235331886-699d0376-17d8-4508-957a-5aebf4b718c1.png)
 
-## TODO (me or contributors) :
-- Improve theme to resize window on every sides and display pop ups correctly with the pop up system (cypunk1.py, infoLog.py, msgBox.py)
-- Add a music system that user could load, mute / change volume working during the bot is running with a default one.
-- Add a "G A M E  O V E R" pop up when the script is entirely done.
-- Add some sound effects customised to the pop ups.
-- Add new fuction using AI to do the stuff directly.
-- Add new function to make a plugin working with selenium to do stuff in the browser without using the clickbot.
-- Improve the theme logic to let the code be more reusable for all new function with a better pop up system.
 
 # :gem: Recommendations  
 
@@ -54,6 +46,18 @@ Looking for more? Discover user-friendly, GUI-free scripts here:
 - [Tiny Scripts](https://github.com/SECRET-GUEST/tiny-scripts)
   
 ![recorder](https://user-images.githubusercontent.com/92639080/235331888-6edd0d0a-57db-4f2c-9323-d61f75651ed7.png)
+
+
+
+
+## TODO (me or contributors) :
+- Improve theme to resize window on every sides and display pop ups correctly with the pop up system (cypunk1.py, infoLog.py, msgBox.py)
+- Add a music system that user could load, mute / change volume working during the bot is running with a default one.
+- Add a "G A M E  O V E R" pop up when the script is entirely done.
+- Add some sound effects customised to the pop ups.
+- Add new fuction using AI to do the stuff directly.
+- Add new function to make a plugin working with selenium to do stuff in the browser without using the clickbot.
+- Improve the theme logic to let the code be more reusable for all new function with a better pop up system.
 
 
 ## Usage / features : 
