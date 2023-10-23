@@ -1,4 +1,4 @@
-[![Download autoclicker](https://img.shields.io/sourceforge/dt/hardworkingbruh.svg)](https://sourceforge.net/projects/hardworkingbruh/files/latest/download) 
+[![Download Complete autoclicker](https://img.shields.io/sourceforge/dt/hardworking-bruh.svg)](https://sourceforge.net/projects/hardworking-bruh/files/latest/download)
 ```
 ██╗  ██╗ █████╗ ██████╗ ██████╗ ██╗    ██╗ ██████╗ ██████╗ ██╗  ██╗██╗███╗   ██╗ ██████╗     ██████╗ ██████╗ ██╗   ██╗██╗  ██╗
 ██║  ██║██╔══██╗██╔══██╗██╔══██╗██║    ██║██╔═══██╗██╔══██╗██║ ██╔╝██║████╗  ██║██╔════╝     ██╔══██╗██╔══██╗██║   ██║██║  ██║
@@ -20,7 +20,7 @@
 
 ###### Note: It's possible that you encounter issues with the execution of large scripts, do not hesitate to add more delays, or to add `wait` between each rows.
 
-[![Download autoclicker](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/hardworkingbruh/files/latest/download)
+[![Download Complete autoclicker](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/hardworking-bruh/files/latest/download)
 
 ## news :
 - Tables to set the autoclicker manually
