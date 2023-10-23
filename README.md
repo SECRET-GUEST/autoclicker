@@ -9,7 +9,7 @@
                                                                                                                               
 
 ```
-![version](https://img.shields.io/badge/VERSION-0.0.2-orange) ![version](https://img.shields.io/badge/PYTHON-3.11.2-blue) ![version](https://img.shields.io/badge/MSI-WINDOWS-blue)
+![version](https://img.shields.io/badge/VERSION-0.0.3-orange) ![version](https://img.shields.io/badge/PYTHON-3.11.2-blue) ![version](https://img.shields.io/badge/MSI-WINDOWS-blue)
 
 ![zoom](https://user-images.githubusercontent.com/92639080/235331879-6a4b4e03-b851-446b-85f1-4c9915a2ccf5.png)
 
